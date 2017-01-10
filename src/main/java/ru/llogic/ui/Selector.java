@@ -2,20 +2,21 @@ package ru.llogic.ui;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.logging.Logger;
 
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.llogic.ui.widget.ElementWidget;
 
 /**
  * @author tolmalev
  */
 public class Selector {
-    private static final Logger logger = Logger.getLogger(Selector.class.getName());
+    private static final Logger logger = LogManager.getLogger(Selector.class);
 
     private final Pane elementsPane;
     private final Pane selectionPane;
@@ -46,7 +47,7 @@ public class Selector {
             if (event.getTarget().equals(elementsPane)) {
                 selectionStart = Optional.of(new Point2D(event.getX(), event.getY()));
 
-                logger.info("Started selection at " + selectionStart.get());
+                logger.debug("Started selection at " + selectionStart.get());
 
                 selection.setLayoutX(event.getX());
                 selection.setLayoutY(event.getY());
@@ -71,7 +72,7 @@ public class Selector {
                         Math.max(selectionStart.get().getY(), event.getY())
                 );
 
-                logger.info("Selection completed width bounds: " + start + ", " + end);
+                logger.debug("Selection completed width bounds: " + start + ", " + end);
                 selectionStart = Optional.empty();
 
                 selectionCompletedConsumer.accept(start, end);

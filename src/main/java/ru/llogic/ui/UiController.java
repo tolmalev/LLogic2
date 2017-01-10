@@ -1,31 +1,26 @@
 package ru.llogic.ui;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
-import javax.print.Doc;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author tolmalev
  */
 public class UiController {
-    private static final Logger loger = Logger.getLogger(UiController.class.getName());
+    private static final Logger loger = LogManager.getLogger(UiController.class);
 
     private Node root;
     private TabPane mainTabPanel;
@@ -54,7 +49,7 @@ public class UiController {
 
             mainTabPanel.getSelectionModel().select(tab);
         } catch (IOException e) {
-            loger.warning("Failed to create tab: " + e.getLocalizedMessage());
+            loger.error("Failed to create tab", e);
         }
     }
 

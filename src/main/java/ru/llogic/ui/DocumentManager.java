@@ -2,27 +2,24 @@ package ru.llogic.ui;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import javafx.geometry.Point2D;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.llogic.core.CalculationManager;
 import ru.llogic.core.Element;
 import ru.llogic.core.element.AndElement;
 import ru.llogic.ui.widget.AndElementWidget;
-import ru.llogic.ui.widget.Coordinates;
 import ru.llogic.ui.widget.ElementWidget;
 
 /**
  * @author tolmalev
  */
 public class DocumentManager {
-    private static final Logger logger = Logger.getLogger(DocumentManager.class.getName());
+    private static final Logger logger = LogManager.getLogger(DocumentManager.class);
 
     private boolean active = false;
 
@@ -63,7 +60,7 @@ public class DocumentManager {
     }
 
     private void selectionCompleted(Point2D start, Point2D end) {
-        logger.info("Selection completed: " + start + ":" + end);
+        logger.debug("Selection completed: " + start + ":" + end);
         linesPane.getChildren().add(new Line(start.getX(), start.getY(), end.getX(), end.getY()));
     }
 

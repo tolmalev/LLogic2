@@ -3,10 +3,10 @@ package ru.llogic.ui;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javafx.geometry.Point2D;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.core.CalculationManager;
@@ -44,7 +44,7 @@ public class DocumentManager {
         elementsPane = (Pane) mainPane.lookup(".elements_pane");
         selectionPane = (Pane) mainPane.lookup(".selection-pane");
 
-        selector = new Selector(elementsPane, selectionPane, this::selectionCompleted);
+        selector = new Selector(elementsPane, selectionPane, this);
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getTarget().equals(elementsPane) && event.getClickCount() == 1) {
@@ -59,9 +59,33 @@ public class DocumentManager {
         });
     }
 
-    private void selectionCompleted(Point2D start, Point2D end) {
-        logger.debug("Selection completed: " + start + ":" + end);
-        linesPane.getChildren().add(new Line(start.getX(), start.getY(), end.getX(), end.getY()));
+    void selectionCompleted(Bounds bounds, boolean addToSelection) {
+        for (Node node : elementsPane.getChildren()) {
+            if (node instanceof ElementWidget && node.getBoundsInParent().intersects(bounds)) {
+                selectNodeInternal(node);
+            } else if (!addToSelection) {
+                unselectNode(node);
+            }
+        }
+    }
+
+    void selectOneNode(Node node, boolean addToSelection) {
+        if (!addToSelection) {
+            unselectAll();
+        }
+        selectNodeInternal(node);
+    }
+
+    void unselectAll() {
+        elementsPane.getChildren().forEach(this::unselectNode);
+    }
+
+    private void selectNodeInternal(Node node) {
+        node.getStyleClass().add("selected");
+    }
+
+    void unselectNode(Node node) {
+        node.getStyleClass().remove("selected");
     }
 
     private void addWidget(AndElementWidget widget) {

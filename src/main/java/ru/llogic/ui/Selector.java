@@ -2,8 +2,12 @@ package ru.llogic.ui;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -25,7 +29,7 @@ public class Selector {
 
     private Optional<Point2D> selectionStart = Optional.empty();
 
-    public Selector(Pane elementsPane, Pane selectionPane, BiConsumer<Point2D, Point2D> selectionCompletedConsumer) {
+    public Selector(Pane elementsPane, Pane selectionPane, DocumentManager documentManager) {
         this.elementsPane = elementsPane;
         this.selectionPane = selectionPane;
 
@@ -75,14 +79,23 @@ public class Selector {
                 logger.debug("Selection completed width bounds: " + start + ", " + end);
                 selectionStart = Optional.empty();
 
-                selectionCompletedConsumer.accept(start, end);
+                documentManager.selectionCompleted(
+                        new BoundingBox(
+                        start.getX(), start.getY(),
+                        end.getX() - start.getX(), end.getY() - start.getY()),
+                        isAddToSelection(event)
+                );
             }
         });
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getTarget() instanceof ElementWidget) {
-                ((ElementWidget) event.getTarget()).getStyleClass().add("selected");
+                documentManager.selectOneNode((Node) event.getTarget(), isAddToSelection(event));
             }
         });
+    }
+
+    private boolean isAddToSelection(MouseEvent event) {
+        return event.isControlDown() || event.isMetaDown();
     }
 }

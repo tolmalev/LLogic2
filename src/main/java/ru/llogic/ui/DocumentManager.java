@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -51,8 +52,10 @@ public class DocumentManager {
                 AndElement andElement = new AndElement(calculationManager, 2);
                 AndElementWidget widget = new AndElementWidget(andElement);
 
-                widget.setLayoutX(event.getX());
-                widget.setLayoutY(event.getY());
+                Point2D gridPoint = GridUtils.rectanglePosition(event.getX(), event.getY(), 5, 4);
+
+                widget.setLayoutX(gridPoint.getX());
+                widget.setLayoutY(gridPoint.getY());
 
                 elementsPane.getChildren().add(widget);
             }

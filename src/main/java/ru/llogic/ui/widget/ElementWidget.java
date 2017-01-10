@@ -1,8 +1,5 @@
 package ru.llogic.ui.widget;
 
-import java.io.IOException;
-
-import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.Region;
 import ru.llogic.core.Element;
 

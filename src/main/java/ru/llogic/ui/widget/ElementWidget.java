@@ -1,7 +1,9 @@
 package ru.llogic.ui.widget;
 
+import javafx.geometry.Point2D;
 import javafx.scene.layout.Region;
 import ru.llogic.core.Element;
+import ru.llogic.core.Point;
 
 /**
  * @author tolmalev
@@ -18,4 +20,6 @@ public abstract class ElementWidget<T extends Element> extends Region {
 
         getStyleClass().add(getClass().getSimpleName());
     }
+
+    public abstract Point2D getPointPosition(Point point);
 }

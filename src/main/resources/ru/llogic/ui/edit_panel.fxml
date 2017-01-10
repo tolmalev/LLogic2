@@ -2,6 +2,8 @@
 
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import ru.llogic.ui.LinesCanvas?>
+
 <AnchorPane
           minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"
           styleClass="edit_pane"
@@ -16,7 +18,7 @@
               AnchorPane.rightAnchor="0.0"
         />
 
-        <Pane styleClass="lines-pane" stylesheets="@main.css" mouseTransparent="true"
+        <LinesCanvas styleClass="lines-pane" mouseTransparent="true"
               AnchorPane.topAnchor="0.0"
               AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0"

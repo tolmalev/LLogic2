@@ -1,6 +1,7 @@
 package ru.llogic.core;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javafx.geometry.Point2D;
+
 /**
  * @author tolmalev
  */
@@ -23,6 +26,7 @@ public class CalculationManager {
     private Map<Point, PointState> calculatedPointState = new ConcurrentHashMap<>();
 
     private Map<Point, Set<Point>> connections = new ConcurrentHashMap<>();
+    private Set<Connection> allConnections = new HashSet<>();
 
     private Map<Point, Element> elementPoints = new ConcurrentHashMap<>();
 
@@ -64,7 +68,7 @@ public class CalculationManager {
     }
 
     public synchronized Point createPoint(PointState state) {
-        Point point = new Point(pointId.getAndIncrement());
+        Point point = new Point(pointId.getAndIncrement(), this);
 
         pointState.put(point, state);
         calculatedPointState.put(point, state);
@@ -74,6 +78,8 @@ public class CalculationManager {
 
     public void addConnection(Point a, Point b) {
         synchronized (connections) {
+            allConnections.add(new Connection(a, b));
+
             PointState state1 = calculatedPointState.get(a);
             PointState state2 = calculatedPointState.get(b);
             if (state1 != state2 && state1 != PointState.Z && state2 != PointState.Z) {
@@ -86,8 +92,14 @@ public class CalculationManager {
         }
     }
 
+    public Set<Connection> getAllConnections() {
+        return Collections.unmodifiableSet(allConnections);
+    }
+
     public void removeConnection(Point a, Point b) {
         synchronized (connections) {
+            allConnections.remove(new Connection(a, b));
+
             getPointConnections(a).remove(b);
             getPointConnections(b).remove(a);
 
@@ -300,5 +312,9 @@ public class CalculationManager {
 
     public long genElementId() {
         return elementId.incrementAndGet();
+    }
+
+    public Optional<Element<?>> getConnectedElement(Point point) {
+        return Optional.ofNullable(elementPoints.get(point));
     }
 }

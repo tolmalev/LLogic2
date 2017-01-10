@@ -15,6 +15,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.llogic.core.element.AndElement;
 
 /**
  * @author tolmalev
@@ -48,6 +49,12 @@ public class UiController {
             activeDocument.setActive(true);
 
             mainTabPanel.getSelectionModel().select(tab);
+
+            AndElement and1 = documentManager.addAndElement(50, 50);
+            AndElement and2 = documentManager.addAndElement(50, 150);
+
+            documentManager.getCalculationManager()
+                    .addConnection(and1.getOutputPoint(), and2.getInputPoints().get(0));
         } catch (IOException e) {
             loger.error("Failed to create tab", e);
         }

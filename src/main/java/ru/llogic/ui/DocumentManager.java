@@ -1,6 +1,7 @@
 package ru.llogic.ui;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.geometry.Bounds;
@@ -8,10 +9,13 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.core.CalculationManager;
 import ru.llogic.core.Element;
+import ru.llogic.core.Point;
 import ru.llogic.core.element.AndElement;
 import ru.llogic.ui.widget.AndElementWidget;
 import ru.llogic.ui.widget.ElementWidget;
@@ -28,7 +32,7 @@ public class DocumentManager {
 
     private final Selector selector;
 
-    private final Pane linesPane;
+    private final LinesCanvas linesPane;
     private final Pane newElementPane;
     private final Pane elementsPane;
     private final Pane selectionPane;
@@ -40,7 +44,9 @@ public class DocumentManager {
         this.mainPane = mainPane;
         this.calculationManager = new CalculationManager();
 
-        linesPane = (Pane) mainPane.lookup(".lines-pane");
+        linesPane = (LinesCanvas) mainPane.lookup(".lines-pane");
+        linesPane.setDocumentManager(this);
+
         newElementPane = (Pane) mainPane.lookup(".new-element-pane");
         elementsPane = (Pane) mainPane.lookup(".elements_pane");
         selectionPane = (Pane) mainPane.lookup(".selection-pane");
@@ -49,17 +55,44 @@ public class DocumentManager {
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getTarget().equals(elementsPane) && event.getClickCount() == 1) {
-                AndElement andElement = new AndElement(calculationManager, 2);
-                AndElementWidget widget = new AndElementWidget(andElement);
-
-                Point2D gridPoint = GridUtils.rectanglePosition(event.getX(), event.getY(), 5, 4);
-
-                widget.setLayoutX(gridPoint.getX());
-                widget.setLayoutY(gridPoint.getY());
-
-                elementsPane.getChildren().add(widget);
+                addAndElement(event.getX(), event.getY());
             }
         });
+
+        Rectangle newElem = new Rectangle(0, 0);
+        newElementPane.getChildren().add(newElem);
+
+        elementsPane.addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
+            Point2D gridPoint = GridUtils.rectanglePosition(event.getX(), event.getY(), 5, 4);
+
+            newElem.setLayoutX(gridPoint.getX());
+            newElem.setLayoutY(gridPoint.getY());
+            newElem.setWidth(50);
+            newElem.setHeight(40);
+
+            if (elementsPane.getChildren()
+                    .filtered(node -> node.getBoundsInParent().intersects(newElem.getBoundsInParent()))
+                    .isEmpty())
+            {
+                newElem.setFill(Color.rgb(0, 255, 0, 0.3));
+            } else {
+                newElem.setFill(Color.rgb(255, 0, 0, 0.3));
+            }
+        });
+    }
+
+    public AndElement addAndElement(double x, double y) {
+        AndElement andElement = new AndElement(calculationManager, 2);
+        AndElementWidget widget = new AndElementWidget(andElement);
+
+        Point2D gridPoint = GridUtils.rectanglePosition(x, y, 5, 4);
+
+        widget.setLayoutX(gridPoint.getX());
+        widget.setLayoutY(gridPoint.getY());
+
+        widgets.put(andElement, widget);
+        elementsPane.getChildren().add(widget);
+        return andElement;
     }
 
     void selectionCompleted(Bounds bounds, boolean addToSelection) {
@@ -70,6 +103,7 @@ public class DocumentManager {
                 unselectNode(node);
             }
         }
+//        linesPane.setCursor(Cursor.DEFAULT);
     }
 
     void selectOneNode(Node node, boolean addToSelection) {
@@ -97,5 +131,18 @@ public class DocumentManager {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    CalculationManager getCalculationManager() {
+        return calculationManager;
+    }
+
+    public Point2D getPosition(Point point) {
+        Optional<Element<?>> element = calculationManager.getConnectedElement(point);
+        if (element.isPresent()) {
+            return widgets.get(element.get()).getPointPosition(point);
+        } else {
+            return new Point2D(100, 100);
+        }
     }
 }

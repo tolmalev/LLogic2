@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ru.llogic.core.CalculationManager;
+import ru.llogic.core.Point;
 import ru.llogic.core.PointState;
 
 /**
@@ -38,5 +39,9 @@ public abstract class LogicElement extends SimpleIoElement {
                 .stream()
                 .map(PointState::asBool)
                 .collect(Collectors.toList());
+    }
+
+    public Point getOutputPoint() {
+        return getOutputPoints().get(0);
     }
 }

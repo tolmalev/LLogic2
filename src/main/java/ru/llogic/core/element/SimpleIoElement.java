@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import ru.llogic.core.CalculationManager;
 import ru.llogic.core.Element;
 import ru.llogic.core.EmptyElementSettings;
+import ru.llogic.core.Point;
 import ru.llogic.core.PointState;
 
 /**
@@ -52,5 +53,17 @@ public class SimpleIoElement extends Element {
 
     protected List<PointState> calculateOutputs(List<PointState> inputs) {
         return outputCalculators.stream().map(calculator -> calculator.apply(inputs)).collect(Collectors.toList());
+    }
+
+    public int getInputsCount() {
+        return inputsCount;
+    }
+
+    public List<Point> getOutputPoints() {
+        return getPoints().subList(inputsCount, getPointsCount());
+    }
+
+    public List<Point> getInputPoints() {
+        return getPoints().subList(0, inputsCount);
     }
 }

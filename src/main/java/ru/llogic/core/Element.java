@@ -75,7 +75,11 @@ public abstract class Element<T extends ElementSettings> {
         return settings;
     }
 
-    List<Point> getPoints() {
+    public List<Point> getPoints() {
         return points;
+    }
+
+    public int getPointIndex(Point point) {
+        return points.indexOf(point);
     }
 }

@@ -6,8 +6,11 @@ package ru.llogic.core;
 public class Point {
     public final long id;
 
-    public Point(long id) {
+    private final CalculationManager calculationManager;
+
+    Point(long id, CalculationManager calculationManager) {
         this.id = id;
+        this.calculationManager = calculationManager;
     }
 
     @Override
@@ -22,6 +25,10 @@ public class Point {
         Point point = (Point) o;
 
         return id == point.id;
+    }
+
+    public PointState getState() {
+        return calculationManager.getPointState(this);
     }
 
     @Override

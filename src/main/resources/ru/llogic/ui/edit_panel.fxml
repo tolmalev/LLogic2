@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane
+          minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"
+          styleClass="edit_pane"
+          stylesheets="@main.css"
+>
+    <children>
+        <Pane styleClass="elements_pane"
+              stylesheets="@main.css"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+        />
+
+        <Pane styleClass="lines-pane" stylesheets="@main.css" mouseTransparent="true"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+        />
+
+        <Pane styleClass="selection-pane" stylesheets="@main.css" mouseTransparent="true"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+        />
+
+        <Pane styleClass="new-element-pane" stylesheets="@main.css" mouseTransparent="true"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+        />
+
+    </children>
+</AnchorPane>

@@ -1,0 +1,15 @@
+.element {
+    -fx-background-image: url("../images/backgrounds/element_background.png");
+    -fx-min-height: 40px;
+    -fx-min-width: 50px;
+}
+
+.selected {
+    -fx-border-color: red;
+    -fx-border-width: 10px;
+}
+
+.AndElementWidget {
+    -fx-background-image: url("../images/icons/and_icon.png");
+    -fx-pref-height: 40px;
+}

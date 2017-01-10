@@ -92,7 +92,7 @@ public class CalculationManagerTest {
 
     @Test
     void andElement() {
-        Element element = new AndElement(manager, 2);
+        Element<?> element = new AndElement(manager, 2);
 
         Point in1 = element.getPoints().get(0);
         Point in2 = element.getPoints().get(1);
@@ -114,7 +114,7 @@ public class CalculationManagerTest {
 
     @Test
     void orElement() {
-        Element element = new OrElement(manager, 2);
+        Element<?> element = new OrElement(manager, 2);
 
         Point in1 = element.getPoints().get(0);
         Point in2 = element.getPoints().get(1);
@@ -139,7 +139,7 @@ public class CalculationManagerTest {
 
     @Test
     void xorElement() {
-        Element element = new XorElement(manager, 2);
+        Element<?> element = new XorElement(manager, 2);
 
         Point in1 = element.getPoints().get(0);
         Point in2 = element.getPoints().get(1);
@@ -164,7 +164,7 @@ public class CalculationManagerTest {
 
     @Test
     void noElement() {
-        Element element = new NotElement(manager);
+        Element<?> element = new NotElement(manager);
 
         Point in = element.getPoints().get(0);
         Point out = element.getPoints().get(1);
@@ -181,7 +181,7 @@ public class CalculationManagerTest {
 
     @org.junit.jupiter.api.Test
     void delayElement() throws InterruptedException {
-        Element element = new DelayElement(manager, 100);
+        Element<?> element = new DelayElement(manager, 100);
 
         Point in = element.getPoints().get(0);
         Point out = element.getPoints().get(1);
@@ -200,8 +200,8 @@ public class CalculationManagerTest {
     @Test
     void rsTrigger() {
         //RS trigger of 2 or-not elements
-        Element orNot1 = new OrNotElement(manager, 2);
-        Element orNot2 = new OrNotElement(manager, 2);
+        Element<?> orNot1 = new OrNotElement(manager, 2);
+        Element<?> orNot2 = new OrNotElement(manager, 2);
 
         Point in11 = orNot1.getPoints().get(0);
         Point in12 = orNot1.getPoints().get(1);
@@ -239,8 +239,8 @@ public class CalculationManagerTest {
 
     @Test
     void delayNotGenerator() throws InterruptedException {
-        Element not = new NotElement(manager);
-        Element delay = new DelayElement(manager, 100);
+        Element<?> not = new NotElement(manager);
+        Element<?> delay = new DelayElement(manager, 100);
 
         manager.addConnection(not.getPoints().get(1), delay.getPoints().get(0));
         manager.addConnection(delay.getPoints().get(1), not.getPoints().get(0));

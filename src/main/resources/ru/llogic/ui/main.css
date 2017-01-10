@@ -1,3 +1,28 @@
 .edit_pane {
+
+}
+
+.lines-pane {
+    -fx-min-width: 100%;
+    -fx-min-height: 100%;
+}
+
+.selection-pane {
+    -fx-min-width: 100%;
+    -fx-min-height: 100%;
+}
+
+.selection-rectangle {
+    -fx-background-color: red;
+}
+
+.new-element-pane {
+    -fx-min-width: 100%;
+    -fx-min-height: 100%;
+}
+
+.elements_pane {
+    -fx-min-width: 100%;
+    -fx-min-height: 100%;
     -fx-background-image: url("images/backgrounds/background.png");
 }

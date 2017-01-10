@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import ru.llogic.core.CalculationManager;
 import ru.llogic.core.Element;
+import ru.llogic.core.EmptyElementSettings;
 import ru.llogic.core.PointState;
 
 /**
@@ -21,7 +22,7 @@ public class SimpleIoElement extends Element {
             int inputsCount,
             List<Function<List<PointState>, PointState>> outputCalculators)
     {
-        super(manager, inputsCount + outputCalculators.size());
+        super(manager, inputsCount + outputCalculators.size(), EmptyElementSettings.class, new EmptyElementSettings());
 
         this.inputsCount = inputsCount;
         this.outputCalculators = outputCalculators;

@@ -42,7 +42,7 @@ public class CalculationManager {
         return createPoint(PointState.Z);
     }
 
-    public synchronized void removeElement(Element element) {
+    public synchronized void removeElement(Element<?> element) {
         //remove all points
         element.getPoints().forEach(this::removePoint);
     }
@@ -284,7 +284,7 @@ public class CalculationManager {
         return current;
     }
 
-    synchronized void bind(Element element) {
+    synchronized void bind(Element<?> element) {
         element.getPoints().forEach(point -> elementPoints.put(point, element));
     }
 

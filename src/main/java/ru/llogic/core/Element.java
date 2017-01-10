@@ -7,11 +7,14 @@ import java.util.stream.Collectors;
 /**
  * @author tolmalev
  */
-public abstract class Element {
+public abstract class Element<T extends ElementSettings> {
     private final long id;
 
     private final CalculationManager manager;
     private final ArrayList<Point> points;
+
+    private final Class<T> settingsClass;
+    protected T settings;
 
     public final synchronized void calculate() {
         doCalculate();
@@ -19,9 +22,11 @@ public abstract class Element {
 
     public abstract void doCalculate();
 
-    protected Element(CalculationManager manager, int pointsCount) {
+    protected Element(CalculationManager manager, int pointsCount, Class<T> settingsClass, T settings) {
         this.id = manager.genElementId();
         this.points = new ArrayList<>(pointsCount);
+        this.settingsClass = settingsClass;
+        this.settings = settings;
         for (int i = 0; i < pointsCount; i++) {
             points.add(manager.createPoint());
         }
@@ -37,6 +42,10 @@ public abstract class Element {
     protected void addPoint(int idx) {
         points.add(idx, manager.createPoint());
         manager.bind(this);
+    }
+
+    public void setSettings(T settings) {
+        this.settings = settings;
     }
 
     public int getPointsCount() {
@@ -60,6 +69,10 @@ public abstract class Element {
 
     protected void updatePointStateAsync(int pointIdx, PointState state, long delayMillis) {
         manager.updatePointStateAsync(points.get(pointIdx), state, this, delayMillis);
+    }
+
+    public T getSettings() {
+        return settings;
     }
 
     List<Point> getPoints() {

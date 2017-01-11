@@ -1,7 +1,7 @@
 .element {
     -fx-background-image: url("../images/backgrounds/element_background.png");
-    -fx-min-height: 40px;
-    -fx-min-width: 50px;
+    /*-fx-min-height: 40px;*/
+    /*-fx-min-width: 50px;*/
 }
 
 .selected {
@@ -11,5 +11,5 @@
 
 .AndElementWidget {
     -fx-background-image: url("../images/icons/and_icon.png");
-    -fx-pref-height: 40px;
+    /*-fx-pref-height: 40px;*/
 }

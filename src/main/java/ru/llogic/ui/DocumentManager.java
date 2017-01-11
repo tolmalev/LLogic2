@@ -17,8 +17,10 @@ import ru.llogic.core.CalculationManager;
 import ru.llogic.core.Element;
 import ru.llogic.core.Point;
 import ru.llogic.core.element.AndElement;
+import ru.llogic.core.element.InElement;
 import ru.llogic.ui.widget.AndElementWidget;
 import ru.llogic.ui.widget.ElementWidget;
+import ru.llogic.ui.widget.InElementWidget;
 
 /**
  * @author tolmalev
@@ -46,6 +48,8 @@ public class DocumentManager {
 
         linesPane = (LinesCanvas) mainPane.lookup(".lines-pane");
         linesPane.setDocumentManager(this);
+
+        calculationManager.addCalculationQueueListener(linesPane::draw);
 
         newElementPane = (Pane) mainPane.lookup(".new-element-pane");
         elementsPane = (Pane) mainPane.lookup(".elements_pane");
@@ -81,8 +85,27 @@ public class DocumentManager {
         });
     }
 
+    public InElement addInElement(double x, double y) {
+        InElement inElement = new InElement(calculationManager);
+        inElement.calculate();
+
+        InElementWidget widget = new InElementWidget(inElement);
+
+        Point2D gridPoint = GridUtils.rectanglePosition(x, y, 5, 4);
+
+        widget.setLayoutX(gridPoint.getX());
+        widget.setLayoutY(gridPoint.getY());
+
+        widgets.put(inElement, widget);
+        elementsPane.getChildren().add(widget);
+
+        return inElement;
+    }
+
     public AndElement addAndElement(double x, double y) {
         AndElement andElement = new AndElement(calculationManager, 2);
+        andElement.calculate();
+
         AndElementWidget widget = new AndElementWidget(andElement);
 
         Point2D gridPoint = GridUtils.rectanglePosition(x, y, 5, 4);
@@ -92,6 +115,7 @@ public class DocumentManager {
 
         widgets.put(andElement, widget);
         elementsPane.getChildren().add(widget);
+
         return andElement;
     }
 
@@ -140,7 +164,9 @@ public class DocumentManager {
     public Point2D getPosition(Point point) {
         Optional<Element<?>> element = calculationManager.getConnectedElement(point);
         if (element.isPresent()) {
-            return widgets.get(element.get()).getPointPosition(point);
+            ElementWidget widget = widgets.get(element.get());
+            Point2D positionInWidget = widget.getPointPosition(point);
+            return positionInWidget.add(widget.getBoundsInParent().getMinX(), widget.getBoundsInParent().getMinY());
         } else {
             return new Point2D(100, 100);
         }

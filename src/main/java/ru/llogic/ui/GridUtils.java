@@ -29,6 +29,6 @@ public class GridUtils {
     }
 
     public static double toGrid(double coord) {
-        return Math.floor((coord + GRID_SIZE / 2) / GRID_SIZE) * GRID_SIZE;
+        return Math.floor((coord + GRID_SIZE / 2) / GRID_SIZE) * GRID_SIZE + 1;
     }
 }

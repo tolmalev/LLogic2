@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.core.element.AndElement;
+import ru.llogic.core.element.InElement;
 
 /**
  * @author tolmalev
@@ -50,8 +51,16 @@ public class UiController {
 
             mainTabPanel.getSelectionModel().select(tab);
 
-            AndElement and1 = documentManager.addAndElement(50, 50);
-            AndElement and2 = documentManager.addAndElement(50, 150);
+            AndElement and1 = documentManager.addAndElement(100, 50);
+            AndElement and2 = documentManager.addAndElement(150, 150);
+
+            InElement in1 = documentManager.addInElement(20, 50);
+            InElement in2 = documentManager.addInElement(20, 100);
+
+            documentManager.getCalculationManager()
+                    .addConnection(in1.getOutputPoint(), and1.getInputPoints().get(0));
+            documentManager.getCalculationManager()
+                    .addConnection(in2.getOutputPoint(), and1.getInputPoints().get(1));
 
             documentManager.getCalculationManager()
                     .addConnection(and1.getOutputPoint(), and2.getInputPoints().get(0));

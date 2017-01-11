@@ -37,6 +37,8 @@ public class CalculationManager {
 
     private Thread calculatorThread;
 
+    private final Set<Runnable> calculationQueueListeners = new HashSet<>();
+
     public CalculationManager() {
         calculatorThread = new Thread(this::calculateAll);
         calculatorThread.start();
@@ -203,6 +205,9 @@ public class CalculationManager {
                     // can be interrupted
                     poll.run();
                     calculationQueue.poll();
+                    synchronized (calculationQueueListeners) {
+                        calculationQueueListeners.forEach(Runnable::run);
+                    }
                 } else {
                     Thread.sleep(10);
                 }
@@ -316,5 +321,11 @@ public class CalculationManager {
 
     public Optional<Element<?>> getConnectedElement(Point point) {
         return Optional.ofNullable(elementPoints.get(point));
+    }
+
+    public void addCalculationQueueListener(Runnable runnable) {
+        synchronized (calculationQueueListeners) {
+            calculationQueueListeners.add(runnable);
+        }
     }
 }

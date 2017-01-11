@@ -116,6 +116,7 @@ public class DocumentManager {
         widgets.put(element, widget);
         elementsPane.getChildren().add(widget);
 
+        // hack
         widget.widthProperty().addListener(evt -> linesPane.draw());
         widget.heightProperty().addListener(evt -> linesPane.draw());
     }

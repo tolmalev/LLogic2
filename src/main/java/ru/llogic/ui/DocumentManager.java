@@ -91,13 +91,7 @@ public class DocumentManager {
 
         InElementWidget widget = new InElementWidget(inElement);
 
-        Point2D gridPoint = GridUtils.rectanglePosition(x, y, 5, 4);
-
-        widget.setLayoutX(gridPoint.getX());
-        widget.setLayoutY(gridPoint.getY());
-
-        widgets.put(inElement, widget);
-        elementsPane.getChildren().add(widget);
+        addWidget(x, y, inElement, widget);
 
         return inElement;
     }
@@ -108,15 +102,22 @@ public class DocumentManager {
 
         AndElementWidget widget = new AndElementWidget(andElement);
 
-        Point2D gridPoint = GridUtils.rectanglePosition(x, y, 5, 4);
+        addWidget(x, y, andElement, widget);
+
+        return andElement;
+    }
+
+    private <T extends Element> void addWidget(double x, double y, T element, ElementWidget<T> widget) {
+        Point2D gridPoint = GridUtils.rectanglePosition(x, y, widget.widthCells(), widget.heightCells());
 
         widget.setLayoutX(gridPoint.getX());
         widget.setLayoutY(gridPoint.getY());
 
-        widgets.put(andElement, widget);
+        widgets.put(element, widget);
         elementsPane.getChildren().add(widget);
 
-        return andElement;
+        widget.widthProperty().addListener(evt -> linesPane.draw());
+        widget.heightProperty().addListener(evt -> linesPane.draw());
     }
 
     void selectionCompleted(Bounds bounds, boolean addToSelection) {

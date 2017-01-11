@@ -1,16 +1,13 @@
 package ru.llogic.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import ru.llogic.core.Connection;
 import ru.llogic.core.PointState;
 
 /**
@@ -54,16 +51,6 @@ public class LinesCanvas extends Canvas {
                         c.getFrom().getState()
                 ))
                 .collect(Collectors.toList());
-
-//        List<UiConnection> connections = new ArrayList<>();
-//        connections.add(new UiConnection(new Point2D(10, 10), new Point2D(100, 10), PointState.HIGH));
-//        connections.add(new UiConnection(new Point2D(100, 10), new Point2D(100, 100), PointState.LOW));
-//        connections.add(new UiConnection(new Point2D(100, 100), new Point2D(10, 100), PointState.Z));
-//        return connections;
-    }
-
-    private UiConnection toUiConnection(Connection connection) {
-        return null;
     }
 
     private void drawConnection(UiConnection connection) {

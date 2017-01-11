@@ -1,5 +1,7 @@
 package ru.llogic.ui.widget;
 
+import java.util.Map;
+
 import javafx.event.EventTarget;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -86,15 +88,9 @@ public abstract class ElementWidget<T extends Element> extends BorderPane {
     }
 
     protected Node buildCenter() {
-        int widthCells = 3;
-        int heightCells = 2;
-
-        widthCells = Math.max(widthCells, 1 + Math.max(topPointsCount(), bottomPointsCount()));
-        heightCells = Math.max(heightCells, 1 + Math.max(leftPointsCount(), rightPointsCount()));
-
         Rectangle rectangle = new Rectangle(
-                GridUtils.gridSize(widthCells),
-                GridUtils.gridSize(heightCells)
+                GridUtils.gridSize(widthCells()),
+                GridUtils.gridSize(heightCells())
         );
         return rectangle;
     }
@@ -115,5 +111,13 @@ public abstract class ElementWidget<T extends Element> extends BorderPane {
 
     public int bottomPointsCount() {
         return 0;
+    }
+
+    public int widthCells() {
+        return Math.max(3, 1 + Math.max(topPointsCount(), bottomPointsCount()));
+    }
+
+    public int heightCells() {
+        return Math.max(2, 1 + Math.max(leftPointsCount(), rightPointsCount()));
     }
 }

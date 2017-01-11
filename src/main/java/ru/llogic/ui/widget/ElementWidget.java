@@ -26,8 +26,6 @@ public abstract class ElementWidget<T extends Element> extends BorderPane {
 
     protected final T element;
 
-    protected Optional<Point2D> dragStart;
-
     protected ElementWidget(T element) {
         this.element = element;
 
@@ -45,26 +43,9 @@ public abstract class ElementWidget<T extends Element> extends BorderPane {
             setRight(buildRight());
         }
 
-        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            dragStart = Optional.of(new Point2D(event.getX(), event.getY()));
-        });
-
-        addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            dragStart = Optional.empty();
-        });
-
         addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (clickToMeOrMyChildren(event) && event.getClickCount() == 2) {
                 onDoubleClick(event);
-            }
-        });
-
-        addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-            if (dragStart.isPresent()) {
-                Point2D dragDelta = new Point2D(event.getX(), event.getY())
-                        .add(-dragStart.get().getX(), -dragStart.get().getY());
-
-                logger.info("Mouse dragged: " + dragDelta.getX() + " " + dragDelta.getY());
             }
         });
     }

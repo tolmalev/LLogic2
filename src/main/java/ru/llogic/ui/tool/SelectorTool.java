@@ -1,7 +1,9 @@
 package ru.llogic.ui.tool;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import javafx.collections.ListChangeListener;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -23,9 +25,8 @@ public class SelectorTool extends ToolBase {
     private final Pane elementsPane;
     private final Pane selectionPane;
 
-    private final Rectangle selection;
-
     private Optional<Point2D> selectionStart = Optional.empty();
+    private Optional<Point2D> dragStart = Optional.empty();
 
     public SelectorTool(DocumentManager documentManager, Pane elementsPane, Pane selectionPane) {
         super(documentManager);
@@ -33,7 +34,49 @@ public class SelectorTool extends ToolBase {
         this.elementsPane = elementsPane;
         this.selectionPane = selectionPane;
 
-        selection = new Rectangle(0, 0, 0, 0);
+        initSelectionHandling();
+        initMoveHandling();
+    }
+
+    private void initMoveHandling() {
+        Consumer<Node> consumer = this::initMoveHandling;
+
+        forAllChildren(consumer);
+    }
+
+    private void forAllChildren(Consumer<Node> consumer) {
+        elementsPane.getChildren().forEach(consumer);
+        elementsPane.getChildren().addListener(
+                (ListChangeListener<Node>) c -> {
+                    while (c.next()) {
+                        c.getAddedSubList().forEach(consumer);
+                    }
+                }
+        );
+    }
+
+    private void initMoveHandling(Node node) {
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            dragStart = Optional.of(new Point2D(event.getX(), event.getY()));
+        });
+
+        node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            dragStart = Optional.empty();
+        });
+
+        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (dragStart.isPresent()) {
+                Point2D dragDelta = new Point2D(event.getX(), event.getY())
+                        .add(-dragStart.get().getX(), -dragStart.get().getY());
+
+                logger.info("Mouse dragged: " + dragDelta.getX() + " " + dragDelta.getY());
+            }
+        });
+    }
+
+    private void initSelectionHandling() {
+
+        Rectangle selection = new Rectangle(0, 0, 0, 0);
         selection.setFill(Color.rgb(176, 204, 241, 100.0 / 255));
         selection.setStroke(Color.rgb(53, 100, 255));
 
@@ -88,10 +131,12 @@ public class SelectorTool extends ToolBase {
             }
         });
 
-        elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (isActive() && event.getTarget() instanceof ElementWidget) {
-                documentManager.selectOneNode((Node) event.getTarget(), isAddToSelection(event));
-            }
+        forAllChildren(node -> {
+            node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                if (isActive()) {
+                    documentManager.selectOneNode(node, isAddToSelection(event));
+                }
+            });
         });
     }
 

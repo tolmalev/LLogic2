@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import javafx.collections.ListChangeListener;
 import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -57,15 +58,19 @@ public class SelectorTool extends ToolBase {
 
     private void initMoveHandling(Node node) {
         node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            dragStart = Optional.of(new Point2D(event.getX(), event.getY()));
+            if (isActive()) {
+                dragStart = Optional.of(new Point2D(event.getX(), event.getY()));
+            }
         });
 
         node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            dragStart = Optional.empty();
+            if (isActive()) {
+                dragStart = Optional.empty();
+            }
         });
 
         node.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-            if (dragStart.isPresent()) {
+            if (isActive() && dragStart.isPresent()) {
                 Point2D dragDelta = new Point2D(event.getX(), event.getY())
                         .add(-dragStart.get().getX(), -dragStart.get().getY());
 
@@ -122,7 +127,7 @@ public class SelectorTool extends ToolBase {
                 logger.debug("Selection completed width bounds: " + start + ", " + end);
                 selectionStart = Optional.empty();
 
-                documentManager.selectElements(
+                selectElements(
                         new BoundingBox(
                         start.getX(), start.getY(),
                         end.getX() - start.getX(), end.getY() - start.getY()),
@@ -132,17 +137,49 @@ public class SelectorTool extends ToolBase {
         });
 
         forAllChildren(node -> {
-            node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                if (isActive()) {
-                    documentManager.selectOneNode(node, isAddToSelection(event));
-                }
-            });
+            if (node instanceof ElementWidget) {
+                node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                    if (isActive()) {
+                        selectOneNode((ElementWidget) node, isAddToSelection(event));
+                    }
+                });
+            }
         });
+    }
+
+    public void selectElements(Bounds bounds, boolean addToSelection) {
+        for (Node node : elementsPane.getChildren()) {
+            if (node instanceof ElementWidget && node.getBoundsInParent().intersects(bounds)) {
+                selectNodeInternal(node);
+            } else if (!addToSelection) {
+                unselectNode(node);
+            }
+        }
+    }
+
+    public void selectOneNode(ElementWidget node, boolean addToSelection) {
+        if (!addToSelection) {
+            unselectAll();
+        }
+        selectNodeInternal(node);
+    }
+
+    public void unselectAll() {
+        elementsPane.getChildren().forEach(this::unselectNode);
+    }
+
+    private void selectNodeInternal(Node node) {
+        node.getStyleClass().add("selected");
+    }
+
+    void unselectNode(Node node) {
+        node.getStyleClass().remove("selected");
     }
 
     @Override
     public void deactivate() {
-        documentManager.unselectAll();
+        super.deactivate();
+        unselectAll();
     }
 
     private boolean isAddToSelection(MouseEvent event) {

@@ -100,40 +100,6 @@ public class DocumentManager {
         widget.heightProperty().addListener(evt -> linesPane.draw());
     }
 
-    public void selectElements(Bounds bounds, boolean addToSelection) {
-        for (Node node : elementsPane.getChildren()) {
-            if (node instanceof ElementWidget && node.getBoundsInParent().intersects(bounds)) {
-                selectNodeInternal(node);
-            } else if (!addToSelection) {
-                unselectNode(node);
-            }
-        }
-//        linesPane.setCursor(Cursor.DEFAULT);
-    }
-
-    public void selectOneNode(Node node, boolean addToSelection) {
-        if (!addToSelection) {
-            unselectAll();
-        }
-        selectNodeInternal(node);
-    }
-
-    public void unselectAll() {
-        elementsPane.getChildren().forEach(this::unselectNode);
-    }
-
-    private void selectNodeInternal(Node node) {
-        node.getStyleClass().add("selected");
-    }
-
-    void unselectNode(Node node) {
-        node.getStyleClass().remove("selected");
-    }
-
-    private void addWidget(AndElementWidget widget) {
-        mainPane.getChildren().add(widget);
-    }
-
     public void setActive(boolean active) {
         this.active = active;
     }

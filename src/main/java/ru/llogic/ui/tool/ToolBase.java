@@ -22,7 +22,7 @@ public abstract class ToolBase {
         active = true;
     }
 
-    public void disactivate() {
+    public void deactivate() {
         active = false;
     }
 }

@@ -7,10 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.core.CalculationManager;
@@ -166,7 +163,7 @@ public class DocumentManager {
 
     private void activateTool(ToolBase tool) {
         if (activeTool != null) {
-            activeTool.disactivate();
+            activeTool.deactivate();
         }
 
         activeTool = tool;

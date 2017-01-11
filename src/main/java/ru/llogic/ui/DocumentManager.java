@@ -118,7 +118,7 @@ public class DocumentManager {
         selectNodeInternal(node);
     }
 
-    void unselectAll() {
+    public void unselectAll() {
         elementsPane.getChildren().forEach(this::unselectNode);
     }
 

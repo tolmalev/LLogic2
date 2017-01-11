@@ -95,6 +95,11 @@ public class SelectorTool extends ToolBase {
         });
     }
 
+    @Override
+    public void deactivate() {
+        documentManager.unselectAll();
+    }
+
     private boolean isAddToSelection(MouseEvent event) {
         return event.isControlDown() || event.isMetaDown();
     }

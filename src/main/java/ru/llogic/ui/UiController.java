@@ -31,6 +31,20 @@ public class UiController {
     private DocumentManager activeDocument;
 
     @FXML
+    public void activateSelector(ActionEvent event) {
+        if (activeDocument != null) {
+            activeDocument.activateSelector();
+        }
+    }
+
+    @FXML
+    public void activateAddAndElement(ActionEvent event) {
+        if (activeDocument != null) {
+            activeDocument.activateAddAndElement();
+        }
+    }
+
+    @FXML
     public void addTab(ActionEvent event) {
         Pane editPane = null;
         try {

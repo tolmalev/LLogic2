@@ -18,6 +18,9 @@ import ru.llogic.core.Element;
 import ru.llogic.core.Point;
 import ru.llogic.core.element.AndElement;
 import ru.llogic.core.element.InElement;
+import ru.llogic.ui.tool.AddElementTool;
+import ru.llogic.ui.tool.SelectorTool;
+import ru.llogic.ui.tool.ToolBase;
 import ru.llogic.ui.widget.AndElementWidget;
 import ru.llogic.ui.widget.ElementWidget;
 import ru.llogic.ui.widget.InElementWidget;
@@ -32,7 +35,10 @@ public class DocumentManager {
 
     private final Pane mainPane;
 
-    private final Selector selector;
+    private final SelectorTool selectorTool;
+    private final AddElementTool addElementTool;
+
+    private ToolBase activeTool;
 
     private final LinesCanvas linesPane;
     private final Pane newElementPane;
@@ -55,34 +61,10 @@ public class DocumentManager {
         elementsPane = (Pane) mainPane.lookup(".elements_pane");
         selectionPane = (Pane) mainPane.lookup(".selection-pane");
 
-        selector = new Selector(elementsPane, selectionPane, this);
+        selectorTool = new SelectorTool(this, elementsPane, selectionPane);
+        addElementTool = new AddElementTool(this, elementsPane, newElementPane);
 
-        elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getTarget().equals(elementsPane) && event.getClickCount() == 1) {
-                addAndElement(event.getX(), event.getY());
-            }
-        });
-
-        Rectangle newElem = new Rectangle(0, 0);
-        newElementPane.getChildren().add(newElem);
-
-        elementsPane.addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
-            Point2D gridPoint = GridUtils.rectanglePosition(event.getX(), event.getY(), 5, 4);
-
-            newElem.setLayoutX(gridPoint.getX());
-            newElem.setLayoutY(gridPoint.getY());
-            newElem.setWidth(50);
-            newElem.setHeight(40);
-
-            if (elementsPane.getChildren()
-                    .filtered(node -> node.getBoundsInParent().intersects(newElem.getBoundsInParent()))
-                    .isEmpty())
-            {
-                newElem.setFill(Color.rgb(0, 255, 0, 0.3));
-            } else {
-                newElem.setFill(Color.rgb(255, 0, 0, 0.3));
-            }
-        });
+        activateTool(selectorTool);
     }
 
     public InElement addInElement(double x, double y) {
@@ -121,7 +103,7 @@ public class DocumentManager {
         widget.heightProperty().addListener(evt -> linesPane.draw());
     }
 
-    void selectionCompleted(Bounds bounds, boolean addToSelection) {
+    public void selectElements(Bounds bounds, boolean addToSelection) {
         for (Node node : elementsPane.getChildren()) {
             if (node instanceof ElementWidget && node.getBoundsInParent().intersects(bounds)) {
                 selectNodeInternal(node);
@@ -132,7 +114,7 @@ public class DocumentManager {
 //        linesPane.setCursor(Cursor.DEFAULT);
     }
 
-    void selectOneNode(Node node, boolean addToSelection) {
+    public void selectOneNode(Node node, boolean addToSelection) {
         if (!addToSelection) {
             unselectAll();
         }
@@ -172,5 +154,22 @@ public class DocumentManager {
         } else {
             return new Point2D(100, 100);
         }
+    }
+
+    public void activateSelector() {
+        activateTool(selectorTool);
+    }
+
+    public void activateAddAndElement() {
+        activateTool(addElementTool);
+    }
+
+    private void activateTool(ToolBase tool) {
+        if (activeTool != null) {
+            activeTool.disactivate();
+        }
+
+        activeTool = tool;
+        tool.activate();
     }
 }

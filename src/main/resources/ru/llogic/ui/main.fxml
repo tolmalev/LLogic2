@@ -12,6 +12,8 @@
    <top>
       <ToolBar>
          <Button text="+" onAction="#addTab"/>
+         <Button text="Select" onAction="#activateSelector"/>
+         <Button text="Add" onAction="#activateAddAndElement"/>
       </ToolBar>
    </top>
    <center>

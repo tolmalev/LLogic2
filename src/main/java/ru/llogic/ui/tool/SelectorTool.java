@@ -1,4 +1,4 @@
-package ru.llogic.ui;
+package ru.llogic.ui.tool;
 
 import java.util.Optional;
 
@@ -11,13 +11,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.llogic.ui.DocumentManager;
 import ru.llogic.ui.widget.ElementWidget;
 
 /**
  * @author tolmalev
  */
-public class Selector {
-    private static final Logger logger = LogManager.getLogger(Selector.class);
+public class SelectorTool extends ToolBase {
+    private static final Logger logger = LogManager.getLogger(SelectorTool.class);
 
     private final Pane elementsPane;
     private final Pane selectionPane;
@@ -26,7 +27,9 @@ public class Selector {
 
     private Optional<Point2D> selectionStart = Optional.empty();
 
-    public Selector(Pane elementsPane, Pane selectionPane, DocumentManager documentManager) {
+    public SelectorTool(DocumentManager documentManager, Pane elementsPane, Pane selectionPane) {
+        super(documentManager);
+
         this.elementsPane = elementsPane;
         this.selectionPane = selectionPane;
 
@@ -35,7 +38,7 @@ public class Selector {
         selection.setStroke(Color.rgb(53, 100, 255));
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-            if (selectionStart.isPresent()) {
+            if (isActive() && selectionStart.isPresent()) {
                 selection.setLayoutX(Math.min(event.getX(), selectionStart.get().getX()));
                 selection.setLayoutY(Math.min(event.getY(), selectionStart.get().getY()));
 
@@ -45,7 +48,7 @@ public class Selector {
         });
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            if (event.getTarget().equals(elementsPane)) {
+            if (isActive() && event.getTarget().equals(elementsPane)) {
                 selectionStart = Optional.of(new Point2D(event.getX(), event.getY()));
 
                 logger.debug("Started selection at " + selectionStart.get());
@@ -60,7 +63,7 @@ public class Selector {
         });
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            if (selectionStart.isPresent()) {
+            if (isActive() && selectionStart.isPresent()) {
                 selectionPane.getChildren().remove(selection);
 
                 Point2D start = new Point2D(
@@ -76,7 +79,7 @@ public class Selector {
                 logger.debug("Selection completed width bounds: " + start + ", " + end);
                 selectionStart = Optional.empty();
 
-                documentManager.selectionCompleted(
+                documentManager.selectElements(
                         new BoundingBox(
                         start.getX(), start.getY(),
                         end.getX() - start.getX(), end.getY() - start.getY()),
@@ -86,7 +89,7 @@ public class Selector {
         });
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getTarget() instanceof ElementWidget) {
+            if (isActive() && event.getTarget() instanceof ElementWidget) {
                 documentManager.selectOneNode((Node) event.getTarget(), isAddToSelection(event));
             }
         });

@@ -98,6 +98,8 @@ public class DocumentManager {
         // hack
         widget.widthProperty().addListener(evt -> linesPane.draw());
         widget.heightProperty().addListener(evt -> linesPane.draw());
+        widget.layoutXProperty().addListener(evt -> linesPane.draw());
+        widget.layoutYProperty().addListener(evt -> linesPane.draw());
     }
 
     public void setActive(boolean active) {

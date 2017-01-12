@@ -1,6 +1,7 @@
 package ru.llogic.ui;
 
 import javafx.geometry.Point2D;
+import ru.llogic.core.Point;
 
 /**
  * @author tolmalev
@@ -29,6 +30,14 @@ public class GridUtils {
     }
 
     public static double toGrid(double coord) {
-        return Math.floor((coord + GRID_SIZE / 2) / GRID_SIZE) * GRID_SIZE + 1;
+        return toGridDelta(coord) + 1;
+    }
+
+    public static double toGridDelta(double coord) {
+        return Math.floor((coord + GRID_SIZE / 2) / GRID_SIZE) * GRID_SIZE;
+    }
+
+    public static Point2D toGridDelta(Point2D delta) {
+        return new Point2D(toGridDelta(delta.getX()), toGrid(delta.getY()));
     }
 }

@@ -1,7 +1,12 @@
 package ru.llogic.ui.tool;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javafx.collections.ListChangeListener;
 import javafx.geometry.BoundingBox;
@@ -15,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.ui.DocumentManager;
+import ru.llogic.ui.GridUtils;
 import ru.llogic.ui.widget.ElementWidget;
 
 /**
@@ -28,6 +34,8 @@ public class SelectorTool extends ToolBase {
 
     private Optional<Point2D> selectionStart = Optional.empty();
     private Optional<Point2D> dragStart = Optional.empty();
+
+    private Set<ElementWidget> selectedElements = new HashSet<>();
 
     public SelectorTool(DocumentManager documentManager, Pane elementsPane, Pane selectionPane) {
         super(documentManager);
@@ -57,15 +65,54 @@ public class SelectorTool extends ToolBase {
     }
 
     private void initMoveHandling(Node node) {
+        class MovedElement {
+            final ElementWidget widget;
+            final Rectangle rectangle;
+            final Point2D startPosition;
+
+            public MovedElement(ElementWidget widget) {
+                this.widget = widget;
+
+                Bounds bounds = widget.getBoundsInParent();
+
+                rectangle = new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(),
+                        bounds.getHeight());
+                rectangle.setMouseTransparent(true);
+                rectangle.setFill(Color.TRANSPARENT);
+
+                elementsPane.getChildren().add(rectangle);
+
+                this.startPosition = new Point2D(rectangle.getX(), rectangle.getY());
+            }
+        };
+
+        AtomicReference<List<MovedElement>> rectangles = new AtomicReference<>(null);
+
         node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (isActive()) {
                 dragStart = Optional.of(new Point2D(event.getX(), event.getY()));
+                rectangles.set(selectedElements
+                        .stream()
+                        .map(widget -> new MovedElement(widget))
+                        .collect(Collectors.toList())
+                );
             }
         });
 
         node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
             if (isActive()) {
                 dragStart = Optional.empty();
+                List<MovedElement> rects = rectangles.get();
+                if (rects != null) {
+                    for (MovedElement rect : rects) {
+                        rect.widget.setLayoutX(rect.rectangle.getX());
+                        rect.widget.setLayoutY(rect.rectangle.getY());
+                    }
+                }
+            }
+            List<MovedElement> rects = rectangles.get();
+            if (rects != null) {
+                elementsPane.getChildren().removeAll(rects.stream().map(r -> r.rectangle).collect(Collectors.toList()));
             }
         });
 
@@ -75,6 +122,24 @@ public class SelectorTool extends ToolBase {
                         .add(-dragStart.get().getX(), -dragStart.get().getY());
 
                 logger.info("Mouse dragged: " + dragDelta.getX() + " " + dragDelta.getY());
+
+                Point2D delta = GridUtils.toGridDelta(dragDelta);
+
+                Color color;
+                if (delta.getX() == 0 && delta.getY() == 0) {
+                    color = Color.TRANSPARENT;
+                } else {
+                    color = Color.rgb(0, 255, 0, 0.3);
+                }
+
+                List<MovedElement> rects = rectangles.get();
+                if (rects != null) {
+                    for (MovedElement rect : rects) {
+                        rect.rectangle.setFill(color);
+                        rect.rectangle.setX(rect.startPosition.getX() + delta.getX());
+                        rect.rectangle.setY(rect.startPosition.getY() + delta.getY());
+                    }
+                }
             }
         });
     }
@@ -166,14 +231,21 @@ public class SelectorTool extends ToolBase {
 
     public void unselectAll() {
         elementsPane.getChildren().forEach(this::unselectNode);
+        selectedElements.clear();
     }
 
     private void selectNodeInternal(Node node) {
-        node.getStyleClass().add("selected");
+        if (node instanceof ElementWidget) {
+            node.getStyleClass().add("selected");
+            selectedElements.add((ElementWidget) node);
+        }
     }
 
     void unselectNode(Node node) {
-        node.getStyleClass().remove("selected");
+        if (node instanceof ElementWidget) {
+            node.getStyleClass().remove("selected");
+            selectedElements.remove(node);
+        }
     }
 
     @Override

@@ -88,7 +88,7 @@ public class DocumentManager {
         return andElement;
     }
 
-    private <T extends Element> void addWidget(double x, double y, T element, ElementWidget<T> widget) {
+    private <T extends Element<?>> void addWidget(double x, double y, T element, ElementWidget<T> widget) {
         Point2D gridPoint = GridUtils.rectanglePosition(x, y, widget.widthCells(), widget.heightCells());
 
         widget.setLayoutX(gridPoint.getX());

@@ -38,6 +38,6 @@ public class GridUtils {
     }
 
     public static Point2D toGridDelta(Point2D delta) {
-        return new Point2D(toGridDelta(delta.getX()), toGrid(delta.getY()));
+        return new Point2D(toGridDelta(delta.getX()), toGridDelta(delta.getY()));
     }
 }

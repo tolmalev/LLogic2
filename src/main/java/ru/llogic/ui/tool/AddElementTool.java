@@ -13,6 +13,8 @@ import ru.llogic.ui.GridUtils;
  * @author tolmalev
  */
 public class AddElementTool extends ToolBase {
+    private Rectangle newElem;
+
     public AddElementTool(DocumentManager documentManager, Pane elementsPane, Pane newElementPane) {
         super(documentManager);
 
@@ -24,7 +26,9 @@ public class AddElementTool extends ToolBase {
             }
         });
 
-        Rectangle newElem = new Rectangle(0, 0);
+        newElem = new Rectangle(0, 0);
+        newElem.setMouseTransparent(false);
+
         newElementPane.getChildren().add(newElem);
 
         EventHandler<MouseEvent> handler = event -> {
@@ -46,5 +50,13 @@ public class AddElementTool extends ToolBase {
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_MOVED, handler);
         elementsPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, handler);
+
+        elementsPane.addEventHandler(MouseEvent.MOUSE_EXITED, event -> newElem.setFill(Color.TRANSPARENT));
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        newElem.setFill(Color.TRANSPARENT);
     }
 }

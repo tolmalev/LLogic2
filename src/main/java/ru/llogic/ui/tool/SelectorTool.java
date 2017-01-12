@@ -260,7 +260,7 @@ public class SelectorTool extends ToolBase {
     }
 
     private void selectNodeInternal(Node node) {
-        if (node instanceof ElementWidget) {
+        if (node instanceof ElementWidget && !selectedElements.contains(node)) {
             node.getStyleClass().add("selected");
             selectedElements.add((ElementWidget) node);
         }

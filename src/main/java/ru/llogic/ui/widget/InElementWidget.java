@@ -2,12 +2,9 @@ package ru.llogic.ui.widget;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Rectangle;
 import ru.llogic.core.Point;
 import ru.llogic.core.PointState;
 import ru.llogic.core.element.InElement;
@@ -28,33 +25,22 @@ public class InElementWidget extends ElementWidget<InElement> {
 
     @Override
     protected void onDoubleClick(MouseEvent event) {
-        element.setSettings(new InElement.InElementSettings(
-                element.getSettings().getPointState() == PointState.HIGH ? PointState.LOW : PointState.HIGH
-        ));
-        setCenter(buildCenter());
+        element.switchState();
 
+        redrawOnPointChange(element.getOutputPoint());
         element.calculate();
     }
 
     @Override
-    protected Node buildCenter() {
-        Pane pane = new Pane();
+    protected void drawCenter() {
+        super.drawCenter();
+        GraphicsContext c = getGraphicsContext2D();
 
-        Rectangle superCenter = (Rectangle) super.buildCenter();
-
-        pane.getChildren().add(superCenter);
-        Ellipse e = new Ellipse(superCenter.getWidth() / 2, superCenter.getHeight() / 2,
-                superCenter.getWidth() / 2, superCenter.getHeight() / 2);
-
-        e.setFill(
-                element.getSettings().getPointState() == PointState.HIGH
-                    ? Color.GREEN
-                    : Color.RED
-        );
-
-        pane.getChildren().add(e);
-
-        return pane;
+        c.setFill(element.getSettings().getPointState() == PointState.HIGH
+                  ? Color.GREEN
+                  : Color.RED);
+        Bounds bounds = getCenterBounds();
+        c.fillOval(bounds.getMinX() + 1, bounds.getMinY() + 1, bounds.getWidth() - 2, bounds.getHeight() - 2);
     }
 
     @Override

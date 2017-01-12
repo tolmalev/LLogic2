@@ -1,17 +1,18 @@
 package ru.llogic.ui.widget;
 
-import java.util.Optional;
+import java.util.List;
 
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.EventTarget;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.core.Element;
@@ -21,33 +22,112 @@ import ru.llogic.ui.GridUtils;
 /**
  * @author tolmalev
  */
-public abstract class ElementWidget<T extends Element> extends BorderPane {
+public abstract class ElementWidget<T extends Element> extends Canvas {
     private static final Logger logger = LogManager.getLogger(ElementWidget.class);
 
     protected final T element;
 
     protected ElementWidget(T element) {
+        super();
         this.element = element;
 
-        getStylesheets().add("ru/llogic/ui/main.css");
-        getStylesheets().add("ru/llogic/ui/widget/default_elements.css");
-//        getStyleClass().add("element");
+        widthProperty().addListener(evt -> draw());
+        heightProperty().addListener(evt -> draw());
+        getStyleClass().addListener((ListChangeListener<String>) c -> draw());
 
-//        getStyleClass().add(getClass().getSimpleName());
-
-        setCenter(buildCenter());
-        if (leftPointsCount() > 0) {
-            setLeft(buildLeft());
-        }
-        if (rightPointsCount() > 0) {
-            setRight(buildRight());
-        }
+        setWidth(getWidthInPixels());
+        setHeight(getHeightInPixels());
 
         addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (clickToMeOrMyChildren(event) && event.getClickCount() == 2) {
                 onDoubleClick(event);
             }
         });
+    }
+
+    protected void redrawOnPointChange(Point point) {
+        point.addStateChangeListener(state -> Platform.runLater(this::draw));
+    }
+
+    public double getWidthInPixels() {
+        return GridUtils.gridSize(widthCells());
+    }
+
+    public double getHeightInPixels() {
+        return GridUtils.gridSize(heightCells());
+    }
+
+    public void draw() {
+        GraphicsContext c = getGraphicsContext2D();
+        c.clearRect(0, 0, getWidth(), getHeight());
+
+        drawPoints();
+        drawCenter();
+        drawBorder();
+    }
+
+    protected void drawCenter() {
+        GraphicsContext c = getGraphicsContext2D();
+
+        c.setFill(Color.GRAY);
+        Bounds bounds = getCenterBounds();
+        c.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+    }
+
+    protected Bounds getCenterBounds() {
+        double minX = 0;
+        double minY = 0;
+        double maxX = getWidth();
+        double maxY = getHeight();
+
+        if (leftPointsCount() > 0) minX += GridUtils.gridSize(1);
+        if (topPointsCount() > 0) minY += GridUtils.gridSize(1);
+        if (rightPointsCount() > 0) maxX -= GridUtils.gridSize(1);
+        if (bottomPointsCount() > 0) maxY -= GridUtils.gridSize(1);
+
+        return new BoundingBox(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    protected void drawPoints() {
+        GraphicsContext c = getGraphicsContext2D();
+
+        c.setFill(Color.BLACK);
+        c.setLineWidth(1);
+        c.setStroke(Color.BLACK);
+
+        Bounds bounds = getCenterBounds();
+        for (Point point : ((List<Point>) element.getPoints())) {
+            Point2D position = getPointPosition(point);
+            c.fillOval(position.getX() - 2, position.getY() - 2, 4, 4);
+
+            double lineX, lineY;
+            if(position.getX() < bounds.getMinX()) {
+                lineY = position.getY();
+                lineX = bounds.getMinX();
+            } else if (position.getX() > bounds.getMaxX() ) {
+                lineY = position.getY();
+                lineX = bounds.getMaxX();
+            } else if(position.getY() < bounds.getMinY()) {
+                lineX = position.getX();
+                lineY = bounds.getMinY();
+            } else {
+                lineX = position.getX();
+                lineY = bounds.getMaxY();
+            }
+
+
+            c.strokeLine(position.getX(), position.getY(), lineX, lineY);
+        }
+    }
+
+    protected void drawBorder() {
+        GraphicsContext c = getGraphicsContext2D();
+
+        if (getStyleClass().contains("selected")) {
+            c.setStroke(Color.rgb(53, 53, 255));
+            c.setLineWidth(getWidth() / 5);
+            c.strokeRect(0, 0, getWidth(), getHeight());
+        }
     }
 
     private boolean clickToMeOrMyChildren(MouseEvent event) {
@@ -64,34 +144,6 @@ public abstract class ElementWidget<T extends Element> extends BorderPane {
 
 
     protected void onDoubleClick(MouseEvent event) {
-        logger.info("Double clicked element: ", this);
-    }
-
-    protected Node buildLeft() {
-        Pane pane = new Pane();
-        for (int i = 0; i < leftPointsCount(); i++) {
-            int y = GridUtils.gridSize(i + 1);
-            pane.getChildren().add(new Line(2, y, GridUtils.gridSize(1), y));
-            pane.getChildren().add(new Circle(0, y, 2, Color.rgb(132, 2, 4)));
-        }
-        return pane;
-    }
-
-    protected Node buildRight() {
-        Pane pane = new Pane();
-        for (int i = 0; i < rightPointsCount(); i++) {
-            int y = GridUtils.gridSize(i + 1);
-            pane.getChildren().add(new Line(0, y, GridUtils.gridSize(1), y));
-        }
-        return pane;
-    }
-
-    protected Node buildCenter() {
-        Rectangle rectangle = new Rectangle(
-                GridUtils.gridSize(widthCells()),
-                GridUtils.gridSize(heightCells())
-        );
-        return rectangle;
     }
 
     public abstract Point2D getPointPosition(Point point);
@@ -112,11 +164,23 @@ public abstract class ElementWidget<T extends Element> extends BorderPane {
         return 0;
     }
 
-    public int widthCells() {
+    public int centerWidthCells() {
         return Math.max(3, 1 + Math.max(topPointsCount(), bottomPointsCount()));
     }
 
-    public int heightCells() {
+    public int centerHeightCells() {
         return Math.max(2, 1 + Math.max(leftPointsCount(), rightPointsCount()));
+    }
+
+    public int widthCells() {
+        return centerWidthCells()
+                + (leftPointsCount() > 0 ? 1 : 0)
+                + (rightPointsCount() > 0 ? 1 : 0);
+    }
+
+    public int heightCells() {
+        return centerHeightCells()
+                + (topPointsCount() > 0 ? 1 : 0)
+                + (bottomPointsCount() > 0 ? 1 : 0);
     }
 }

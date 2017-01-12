@@ -13,6 +13,8 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -31,6 +33,7 @@ public class SelectorTool extends ToolBase {
 
     private final Pane elementsPane;
     private final Pane selectionPane;
+    private final Canvas selectionCanvas;
 
     private Optional<Point2D> selectionStart = Optional.empty();
     private Optional<Point2D> dragStart = Optional.empty();
@@ -42,9 +45,50 @@ public class SelectorTool extends ToolBase {
 
         this.elementsPane = elementsPane;
         this.selectionPane = selectionPane;
+        this.selectionCanvas = createSelectionCanvas(elementsPane);
 
         initSelectionHandling();
         initMoveHandling();
+    }
+
+    private Canvas createSelectionCanvas(Pane elementsPane) {
+        Canvas canvas = new Canvas();
+        canvas.setMouseTransparent(true);
+        canvas.widthProperty().bind(elementsPane.widthProperty());
+        canvas.heightProperty().bind(elementsPane.heightProperty());
+        canvas.toFront();
+
+        canvas.widthProperty().addListener(evt -> drawSelection());
+        canvas.heightProperty().addListener(evt -> drawSelection());
+
+        elementsPane.getChildren().add(canvas);
+
+        return canvas;
+    }
+
+    private void drawSelection() {
+        GraphicsContext c = selectionCanvas.getGraphicsContext2D();
+        c.clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
+
+        c.setStroke(Color.rgb(53, 53, 255));
+        c.setLineWidth(2);
+
+        for (ElementWidget element : selectedElements) {
+            Bounds bounds = element.getBoundsInParent();
+
+            double dx = bounds.getWidth() / 5;
+            double dy = bounds.getHeight() / 5;
+
+            c.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX() + dx, bounds.getMinY());
+            c.strokeLine(bounds.getMinX(), bounds.getMaxY(), bounds.getMinX() + dx, bounds.getMaxY());
+            c.strokeLine(bounds.getMaxX() - dx, bounds.getMinY(), bounds.getMaxX(), bounds.getMinY());
+            c.strokeLine(bounds.getMaxX() - dx, bounds.getMaxY(), bounds.getMaxX(), bounds.getMaxY());
+
+            c.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMinY() + dy);
+            c.strokeLine(bounds.getMaxX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMinY() + dy);
+            c.strokeLine(bounds.getMinX(), bounds.getMaxY() - dy, bounds.getMinX(), bounds.getMaxY());
+            c.strokeLine(bounds.getMaxX(), bounds.getMaxY() - dy, bounds.getMaxX(), bounds.getMaxY());
+        }
     }
 
     private void initMoveHandling() {
@@ -142,6 +186,7 @@ public class SelectorTool extends ToolBase {
                     if (rects.stream().filter(e -> !e.canBeMoved()).collect(Collectors.toList()).isEmpty()) {
                         rects.forEach(MovedElement::move);
                     }
+                    drawSelection();
                 }
             }
             List<MovedElement> rects = movedElementsRef.get();
@@ -257,12 +302,14 @@ public class SelectorTool extends ToolBase {
     public void unselectAll() {
         elementsPane.getChildren().forEach(this::unselectNode);
         selectedElements.clear();
+        drawSelection();
     }
 
     private void selectNodeInternal(Node node) {
         if (node instanceof ElementWidget && !selectedElements.contains(node)) {
             node.getStyleClass().add("selected");
             selectedElements.add((ElementWidget) node);
+            drawSelection();
         }
     }
 
@@ -270,6 +317,7 @@ public class SelectorTool extends ToolBase {
         if (node instanceof ElementWidget) {
             node.getStyleClass().remove("selected");
             selectedElements.remove(node);
+            drawSelection();
         }
     }
 

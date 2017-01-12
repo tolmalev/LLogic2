@@ -63,7 +63,7 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
 
         drawPoints();
         drawCenter();
-        drawBorder();
+//        drawBorder();
     }
 
     protected void drawCenter() {

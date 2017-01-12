@@ -18,12 +18,7 @@
               AnchorPane.rightAnchor="0.0"
         />
 
-        <LinesCanvas styleClass="lines-pane" mouseTransparent="true"
-              AnchorPane.topAnchor="0.0"
-              AnchorPane.bottomAnchor="0.0"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-        />
+        <LinesCanvas styleClass="lines-pane" mouseTransparent="true"/>
 
         <Pane styleClass="selection-pane" stylesheets="@main.css" mouseTransparent="true"
               AnchorPane.topAnchor="0.0"

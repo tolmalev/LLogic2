@@ -79,15 +79,20 @@ public class SelectorTool extends ToolBase {
             double dx = bounds.getWidth() / 5;
             double dy = bounds.getHeight() / 5;
 
-            c.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX() + dx, bounds.getMinY());
-            c.strokeLine(bounds.getMinX(), bounds.getMaxY(), bounds.getMinX() + dx, bounds.getMaxY());
-            c.strokeLine(bounds.getMaxX() - dx, bounds.getMinY(), bounds.getMaxX(), bounds.getMinY());
-            c.strokeLine(bounds.getMaxX() - dx, bounds.getMaxY(), bounds.getMaxX(), bounds.getMaxY());
+            double minX = bounds.getMinX();
+            double maxX = bounds.getMaxX();
+            double minY = bounds.getMinY();
+            double maxY = bounds.getMaxY();
 
-            c.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMinY() + dy);
-            c.strokeLine(bounds.getMaxX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMinY() + dy);
-            c.strokeLine(bounds.getMinX(), bounds.getMaxY() - dy, bounds.getMinX(), bounds.getMaxY());
-            c.strokeLine(bounds.getMaxX(), bounds.getMaxY() - dy, bounds.getMaxX(), bounds.getMaxY());
+            c.strokeLine(minX, minY, minX + dx, minY);
+            c.strokeLine(minX, maxY, minX + dx, maxY);
+            c.strokeLine(maxX - dx, minY, maxX, minY);
+            c.strokeLine(maxX - dx, maxY, maxX, maxY);
+
+            c.strokeLine(minX, minY, minX, minY + dy);
+            c.strokeLine(maxX, minY, maxX, minY + dy);
+            c.strokeLine(minX, maxY - dy, minX, maxY);
+            c.strokeLine(maxX, maxY - dy, maxX, maxY);
         }
     }
 

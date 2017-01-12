@@ -1,5 +1,5 @@
 .edit_pane {
-
+    -fx-background-image: url("images/backgrounds/background.png");
 }
 
 .lines-pane {
@@ -24,5 +24,4 @@
 .elements_pane {
     -fx-min-width: 100%;
     -fx-min-height: 100%;
-    -fx-background-image: url("images/backgrounds/background.png");
 }

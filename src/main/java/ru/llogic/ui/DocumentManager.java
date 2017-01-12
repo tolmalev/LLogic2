@@ -100,8 +100,8 @@ public class DocumentManager {
 
         Point2D gridPoint = GridUtils.rectanglePosition(x, y, widget.widthCells(), widget.heightCells());
 
-        widget.setLayoutX(gridPoint.getX());
-        widget.setLayoutY(gridPoint.getY());
+        widget.setLayoutX(gridPoint.getX() - GridUtils.ELEMENT_BORDER);
+        widget.setLayoutY(gridPoint.getY() - GridUtils.ELEMENT_BORDER);
 
         widgets.put(element, widget);
         elementsPane.getChildren().add(widget);
@@ -126,7 +126,9 @@ public class DocumentManager {
         if (element.isPresent()) {
             ElementWidget widget = widgets.get(element.get());
             Point2D positionInWidget = widget.getPointPosition(point);
-            return positionInWidget.add(widget.getBoundsInParent().getMinX(), widget.getBoundsInParent().getMinY());
+            return positionInWidget
+                    .add(widget.getBoundsInParent().getMinX(), widget.getBoundsInParent().getMinY())
+                    .add(GridUtils.ELEMENT_BORDER, GridUtils.ELEMENT_BORDER);
         } else {
             return new Point2D(100, 100);
         }

@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import ru.llogic.core.Point;
 import ru.llogic.core.element.PointElement;
+import ru.llogic.ui.GridUtils;
 
 /**
  * @author tolmalev
@@ -24,17 +25,17 @@ public class PointWidget extends ElementWidget<PointElement> {
         GraphicsContext c = getGraphicsContext2D();
         c.setFill(Color.BLACK);
 
-        c.fillOval(0, 0, getWidth(), getHeight());
+        c.fillOval(2, 2, 4, 4);
     }
 
     @Override
     public double getWidthInPixels() {
-        return 4;
+        return GridUtils.ELEMENT_BORDER * 2;
     }
 
     @Override
     public double getHeightInPixels() {
-        return 4;
+        return GridUtils.ELEMENT_BORDER * 2;
     }
 
     @Override

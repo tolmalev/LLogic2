@@ -1,13 +1,13 @@
 package ru.llogic.ui;
 
 import javafx.geometry.Point2D;
-import ru.llogic.core.Point;
 
 /**
  * @author tolmalev
  */
 public class GridUtils {
     public static final int GRID_SIZE = 10;
+    public static final int ELEMENT_BORDER = 4;
 
     public static final int gridSize(int cells) {
         return cells * GRID_SIZE;

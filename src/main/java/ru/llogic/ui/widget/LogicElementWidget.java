@@ -20,7 +20,9 @@ public abstract class LogicElementWidget<T extends LogicElement> extends Element
         if (pointIndex < element.getInputsCount()) {
             return new Point2D(0, GridUtils.gridSize(pointIndex + 1));
         } else {
-            return new Point2D(getWidth(), GridUtils.gridSize(pointIndex - element.getInputsCount() + 1));
+            return new Point2D(
+                    getWidth() - 2 * GridUtils.ELEMENT_BORDER,
+                    GridUtils.gridSize(pointIndex - element.getInputsCount() + 1));
         }
     }
 

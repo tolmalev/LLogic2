@@ -49,11 +49,11 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
     }
 
     public double getWidthInPixels() {
-        return GridUtils.gridSize(widthCells());
+        return GridUtils.gridSize(widthCells()) + GridUtils.ELEMENT_BORDER * 2;
     }
 
     public double getHeightInPixels() {
-        return GridUtils.gridSize(heightCells());
+        return GridUtils.gridSize(heightCells()) + GridUtils.ELEMENT_BORDER * 2;
     }
 
     public void draw() {
@@ -74,10 +74,10 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
     }
 
     protected Bounds getCenterBounds() {
-        double minX = 0;
-        double minY = 0;
-        double maxX = getWidth();
-        double maxY = getHeight();
+        double minX = GridUtils.ELEMENT_BORDER;
+        double minY = GridUtils.ELEMENT_BORDER;
+        double maxX = getWidth() - GridUtils.ELEMENT_BORDER;
+        double maxY = getHeight() - GridUtils.ELEMENT_BORDER;
 
         if (leftPointsCount() > 0) minX += GridUtils.gridSize(1);
         if (topPointsCount() > 0) minY += GridUtils.gridSize(1);
@@ -96,7 +96,8 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
 
         Bounds bounds = getCenterBounds();
         for (Point point : ((List<Point>) element.getPoints())) {
-            Point2D position = getPointPosition(point);
+            Point2D position = getPointPosition(point)
+                    .add(GridUtils.ELEMENT_BORDER, GridUtils.ELEMENT_BORDER);
             c.fillOval(position.getX() - 2, position.getY() - 2, 4, 4);
 
             double lineX, lineY;

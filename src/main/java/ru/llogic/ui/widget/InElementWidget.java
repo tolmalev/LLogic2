@@ -20,7 +20,7 @@ public class InElementWidget extends ElementWidget<InElement> {
 
     @Override
     public Point2D getPointPosition(Point point) {
-        return new Point2D(getWidth(), GridUtils.gridSize(1));
+        return new Point2D(getWidth() - 2 * GridUtils.ELEMENT_BORDER, GridUtils.gridSize(1));
     }
 
     @Override

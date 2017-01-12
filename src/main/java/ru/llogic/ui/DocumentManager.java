@@ -120,7 +120,7 @@ public class DocumentManager {
         this.active = active;
     }
 
-    CalculationManager getCalculationManager() {
+    public CalculationManager getCalculationManager() {
         return calculationManager;
     }
 

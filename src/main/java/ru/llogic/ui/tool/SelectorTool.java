@@ -84,14 +84,49 @@ public class SelectorTool extends ToolBase {
 
                 this.startPosition = new Point2D(rectangle.getX(), rectangle.getY());
             }
+
+            public boolean canBeMoved() {
+                // better to use list of MovedElement instead of selectedElements
+                return documentManager.placeIsFree(
+                        rectangle.getBoundsInParent(),
+                        selectedElements
+                );
+            }
+
+            public void move() {
+                if (!canBeMoved()) {
+                    throw new IllegalStateException("Element can't be moved here");
+                }
+                widget.setLayoutX(rectangle.getX());
+                widget.setLayoutY(rectangle.getY());
+            }
+
+            public void moveNewPositionRect(Point2D delta) {
+                rectangle.setX(startPosition.getX() + delta.getX());
+                rectangle.setY(startPosition.getY() + delta.getY());
+
+                Color color;
+                if (delta.getX() == 0 && delta.getY() == 0) {
+                    color = Color.TRANSPARENT;
+                } else if (canBeMoved()) {
+                    color = Color.rgb(0, 255, 0, 0.3);
+                } else {
+                    color = Color.rgb(255, 0, 0, 0.3);
+                }
+
+                rectangle.setFill(color);
+            }
         };
 
-        AtomicReference<List<MovedElement>> rectangles = new AtomicReference<>(null);
+        AtomicReference<List<MovedElement>> movedElementsRef = new AtomicReference<>(null);
 
         node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (isActive()) {
+                if (!selectedElements.contains(node)) {
+                    selectOneNode(node, false);
+                }
                 dragStart = Optional.of(new Point2D(event.getX(), event.getY()));
-                rectangles.set(selectedElements
+                movedElementsRef.set(selectedElements
                         .stream()
                         .map(widget -> new MovedElement(widget))
                         .collect(Collectors.toList())
@@ -102,15 +137,14 @@ public class SelectorTool extends ToolBase {
         node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
             if (isActive()) {
                 dragStart = Optional.empty();
-                List<MovedElement> rects = rectangles.get();
+                List<MovedElement> rects = movedElementsRef.get();
                 if (rects != null) {
-                    for (MovedElement rect : rects) {
-                        rect.widget.setLayoutX(rect.rectangle.getX());
-                        rect.widget.setLayoutY(rect.rectangle.getY());
+                    if (rects.stream().filter(e -> !e.canBeMoved()).collect(Collectors.toList()).isEmpty()) {
+                        rects.forEach(MovedElement::move);
                     }
                 }
             }
-            List<MovedElement> rects = rectangles.get();
+            List<MovedElement> rects = movedElementsRef.get();
             if (rects != null) {
                 elementsPane.getChildren().removeAll(rects.stream().map(r -> r.rectangle).collect(Collectors.toList()));
             }
@@ -125,20 +159,9 @@ public class SelectorTool extends ToolBase {
 
                 Point2D delta = GridUtils.toGridDelta(dragDelta);
 
-                Color color;
-                if (delta.getX() == 0 && delta.getY() == 0) {
-                    color = Color.TRANSPARENT;
-                } else {
-                    color = Color.rgb(0, 255, 0, 0.3);
-                }
-
-                List<MovedElement> rects = rectangles.get();
-                if (rects != null) {
-                    for (MovedElement rect : rects) {
-                        rect.rectangle.setFill(color);
-                        rect.rectangle.setX(rect.startPosition.getX() + delta.getX());
-                        rect.rectangle.setY(rect.startPosition.getY() + delta.getY());
-                    }
+                List<MovedElement> movedElements = movedElementsRef.get();
+                if (movedElements != null) {
+                    movedElements.forEach(el -> el.moveNewPositionRect(delta));
                 }
             }
         });
@@ -222,7 +245,7 @@ public class SelectorTool extends ToolBase {
         }
     }
 
-    public void selectOneNode(ElementWidget node, boolean addToSelection) {
+    public void selectOneNode(Node node, boolean addToSelection) {
         if (!addToSelection) {
             unselectAll();
         }

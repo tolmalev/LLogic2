@@ -1,7 +1,9 @@
 package ru.llogic.ui;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.geometry.Bounds;
@@ -136,5 +138,17 @@ public class DocumentManager {
 
         activeTool = tool;
         tool.activate();
+    }
+
+    public boolean placeIsFree(Bounds bounds) {
+        return placeIsFree(bounds, Collections.EMPTY_SET);
+    }
+
+    public boolean placeIsFree(Bounds bounds, Set<ElementWidget> ignore) {
+        return elementsPane.getChildren()
+                .filtered(node -> node instanceof ElementWidget)
+                .filtered(node -> !ignore.contains(node))
+                .filtered(node -> node.getBoundsInParent().intersects(bounds))
+                .isEmpty();
     }
 }

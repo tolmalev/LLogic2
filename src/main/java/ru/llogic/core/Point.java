@@ -1,5 +1,9 @@
 package ru.llogic.core;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 /**
  * @author tolmalev
  */
@@ -7,6 +11,7 @@ public class Point {
     public final long id;
 
     private final CalculationManager calculationManager;
+    private final List<Consumer<PointState>> stateChangeListeners = new ArrayList<>();
 
     Point(long id, CalculationManager calculationManager) {
         this.id = id;
@@ -34,6 +39,18 @@ public class Point {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
+    }
+
+    void stateChanged(PointState currentState) {
+        synchronized (stateChangeListeners) {
+            stateChangeListeners.forEach(listener -> listener.accept(currentState));
+        }
+    }
+
+    public void addStateChangeListener(Consumer<PointState> listener) {
+        synchronized (stateChangeListeners) {
+            stateChangeListeners.add(listener);
+        }
     }
 
     @Override

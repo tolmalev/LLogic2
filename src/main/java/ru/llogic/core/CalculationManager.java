@@ -176,12 +176,12 @@ public class CalculationManager {
         if (oldState != newState) {
             Element element = elementPoints.get(p);
             if (element != null) {
-                if (source.isPresent() && source.get() == element && p == startPoint) {
-                    // this point caused state update
-                    return;
+                if (!(source.isPresent() && source.get() == element && p == startPoint)) {
+                    // not this point caused state update
+                    addToCalculationQueue(element);
                 }
-                addToCalculationQueue(element);
             }
+            p.stateChanged(newState);
         }
     }
 

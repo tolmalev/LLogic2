@@ -155,8 +155,6 @@ public class SelectorTool extends ToolBase {
                 Point2D dragDelta = new Point2D(event.getX(), event.getY())
                         .add(-dragStart.get().getX(), -dragStart.get().getY());
 
-                logger.info("Mouse dragged: " + dragDelta.getX() + " " + dragDelta.getY());
-
                 Point2D delta = GridUtils.toGridDelta(dragDelta);
 
                 List<MovedElement> movedElements = movedElementsRef.get();
@@ -228,7 +226,7 @@ public class SelectorTool extends ToolBase {
             if (node instanceof ElementWidget) {
                 node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                     if (isActive()) {
-                        selectOneNode((ElementWidget) node, isAddToSelection(event));
+                        selectOneNode(node, isAddToSelection(event));
                     }
                 });
             }
@@ -246,6 +244,10 @@ public class SelectorTool extends ToolBase {
     }
 
     public void selectOneNode(Node node, boolean addToSelection) {
+        if (selectedElements.contains(node)) {
+            //node is already selected - do nothing
+            return;
+        }
         if (!addToSelection) {
             unselectAll();
         }

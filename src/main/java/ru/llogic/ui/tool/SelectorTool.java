@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.llogic.ui.CanvasUtils;
 import ru.llogic.ui.DocumentManager;
 import ru.llogic.ui.GridUtils;
 import ru.llogic.ui.widget.ElementWidget;
@@ -45,25 +46,14 @@ public class SelectorTool extends ToolBase {
 
         this.elementsPane = elementsPane;
         this.selectionPane = selectionPane;
-        this.selectionCanvas = createSelectionCanvas(elementsPane);
+        this.selectionCanvas = CanvasUtils.createResisableCanvas(elementsPane, this::drawSelection);
+        forAllChildren(node -> {
+            node.layoutXProperty().addListener(e -> drawSelection());
+            node.layoutYProperty().addListener(e -> drawSelection());
+        });
 
         initSelectionHandling();
         initMoveHandling();
-    }
-
-    private Canvas createSelectionCanvas(Pane elementsPane) {
-        Canvas canvas = new Canvas();
-        canvas.setMouseTransparent(true);
-        canvas.widthProperty().bind(elementsPane.widthProperty());
-        canvas.heightProperty().bind(elementsPane.heightProperty());
-        canvas.toFront();
-
-        canvas.widthProperty().addListener(evt -> drawSelection());
-        canvas.heightProperty().addListener(evt -> drawSelection());
-
-        elementsPane.getChildren().add(canvas);
-
-        return canvas;
     }
 
     private void drawSelection() {
@@ -191,7 +181,6 @@ public class SelectorTool extends ToolBase {
                     if (rects.stream().filter(e -> !e.canBeMoved()).collect(Collectors.toList()).isEmpty()) {
                         rects.forEach(MovedElement::move);
                     }
-                    drawSelection();
                 }
             }
             List<MovedElement> rects = movedElementsRef.get();
@@ -328,8 +317,8 @@ public class SelectorTool extends ToolBase {
 
     @Override
     public void deactivate() {
-        super.deactivate();
         unselectAll();
+        super.deactivate();
     }
 
     private boolean isAddToSelection(MouseEvent event) {

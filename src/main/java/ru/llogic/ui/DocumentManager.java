@@ -18,6 +18,7 @@ import ru.llogic.core.element.AndElement;
 import ru.llogic.core.element.InElement;
 import ru.llogic.core.element.PointElement;
 import ru.llogic.ui.tool.AddElementTool;
+import ru.llogic.ui.tool.ConnectTool;
 import ru.llogic.ui.tool.SelectorTool;
 import ru.llogic.ui.tool.ToolBase;
 import ru.llogic.ui.widget.AndElementWidget;
@@ -37,6 +38,7 @@ public class DocumentManager {
 
     private final SelectorTool selectorTool;
     private final AddElementTool addElementTool;
+    private final ConnectTool connectTool;
 
     private ToolBase activeTool;
 
@@ -63,6 +65,7 @@ public class DocumentManager {
 
         selectorTool = new SelectorTool(this, elementsPane, selectionPane);
         addElementTool = new AddElementTool(this, elementsPane, newElementPane);
+        connectTool = new ConnectTool(this, elementsPane);
 
         activateTool(selectorTool);
     }
@@ -134,12 +137,16 @@ public class DocumentManager {
         }
     }
 
-    public void activateSelector() {
-        activateTool(selectorTool);
+    public boolean placeIsFree(Bounds bounds) {
+        return placeIsFree(bounds, Collections.EMPTY_SET);
     }
 
-    public void activateAddAndElement() {
-        activateTool(addElementTool);
+    public boolean placeIsFree(Bounds bounds, Set<ElementWidget> ignore) {
+        return elementsPane.getChildren()
+                .filtered(node -> node instanceof ElementWidget)
+                .filtered(node -> !ignore.contains(node))
+                .filtered(node -> node.getBoundsInParent().intersects(bounds))
+                .isEmpty();
     }
 
     private void activateTool(ToolBase tool) {
@@ -151,15 +158,15 @@ public class DocumentManager {
         tool.activate();
     }
 
-    public boolean placeIsFree(Bounds bounds) {
-        return placeIsFree(bounds, Collections.EMPTY_SET);
+    public void activateConnect() {
+        activateTool(connectTool);
     }
 
-    public boolean placeIsFree(Bounds bounds, Set<ElementWidget> ignore) {
-        return elementsPane.getChildren()
-                .filtered(node -> node instanceof ElementWidget)
-                .filtered(node -> !ignore.contains(node))
-                .filtered(node -> node.getBoundsInParent().intersects(bounds))
-                .isEmpty();
+    public void activateSelector() {
+        activateTool(selectorTool);
+    }
+
+    public void activateAddAndElement() {
+        activateTool(addElementTool);
     }
 }

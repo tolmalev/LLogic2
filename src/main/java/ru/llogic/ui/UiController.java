@@ -46,6 +46,13 @@ public class UiController {
     }
 
     @FXML
+    public void activateConnect(ActionEvent event) {
+        if (activeDocument != null) {
+            activeDocument.activateConnect();
+        }
+    }
+
+    @FXML
     public void addTab(ActionEvent event) {
         Pane editPane = null;
         try {

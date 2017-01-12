@@ -28,7 +28,6 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
     protected final T element;
 
     protected ElementWidget(T element) {
-        super();
         this.element = element;
 
         widthProperty().addListener(evt -> draw());
@@ -194,5 +193,9 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
         return centerHeightCells()
                 + (topPointsCount() > 0 ? 1 : 0)
                 + (bottomPointsCount() > 0 ? 1 : 0);
+    }
+
+    public T getElement() {
+        return element;
     }
 }

@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.llogic.core.element.AndElement;
 import ru.llogic.core.element.InElement;
+import ru.llogic.core.element.PointElement;
 
 /**
  * @author tolmalev
@@ -71,10 +72,15 @@ public class UiController {
             InElement in1 = documentManager.addInElement(20, 50);
             InElement in2 = documentManager.addInElement(20, 100);
 
+            PointElement pe = documentManager.addPointElement(100, 300);
+
             documentManager.getCalculationManager()
                     .addConnection(in1.getOutputPoint(), and1.getInputPoints().get(0));
             documentManager.getCalculationManager()
                     .addConnection(in2.getOutputPoint(), and1.getInputPoints().get(1));
+
+            documentManager.getCalculationManager().addConnection(in2.getOutputPoint(), pe.getPoint());
+            documentManager.getCalculationManager().addConnection(pe.getPoint(), and2.getInputPoints().get(1));
 
             documentManager.getCalculationManager()
                     .addConnection(and1.getOutputPoint(), and2.getInputPoints().get(0));

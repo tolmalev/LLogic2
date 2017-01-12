@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,12 +16,14 @@ import ru.llogic.core.Element;
 import ru.llogic.core.Point;
 import ru.llogic.core.element.AndElement;
 import ru.llogic.core.element.InElement;
+import ru.llogic.core.element.PointElement;
 import ru.llogic.ui.tool.AddElementTool;
 import ru.llogic.ui.tool.SelectorTool;
 import ru.llogic.ui.tool.ToolBase;
 import ru.llogic.ui.widget.AndElementWidget;
 import ru.llogic.ui.widget.ElementWidget;
 import ru.llogic.ui.widget.InElementWidget;
+import ru.llogic.ui.widget.PointWidget;
 
 /**
  * @author tolmalev
@@ -72,7 +73,7 @@ public class DocumentManager {
 
         InElementWidget widget = new InElementWidget(inElement);
 
-        addWidget(x, y, inElement, widget);
+        addWidget(x, y, widget);
 
         return inElement;
     }
@@ -83,12 +84,20 @@ public class DocumentManager {
 
         AndElementWidget widget = new AndElementWidget(andElement);
 
-        addWidget(x, y, andElement, widget);
+        addWidget(x, y, widget);
 
         return andElement;
     }
 
-    private <T extends Element<?>> void addWidget(double x, double y, T element, ElementWidget<T> widget) {
+    public PointElement addPointElement(double x, double y) {
+        PointElement element = new PointElement(calculationManager);
+        addWidget(x, y, new PointWidget(element));
+        return element;
+    }
+
+    private <T extends Element<?>> void addWidget(double x, double y, ElementWidget<T> widget) {
+        T element = widget.getElement();
+
         Point2D gridPoint = GridUtils.rectanglePosition(x, y, widget.widthCells(), widget.heightCells());
 
         widget.setLayoutX(gridPoint.getX());

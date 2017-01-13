@@ -21,7 +21,7 @@ public class AddElementTool extends ToolBase {
         elementsPane.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (isActive()) {
                 if (event.getTarget().equals(elementsPane) && event.getClickCount() == 1) {
-                    documentManager.addAndElement(event.getX(), event.getY());
+                    addElement(documentManager, event.getX(), event.getY());
                 }
             }
         });
@@ -33,12 +33,13 @@ public class AddElementTool extends ToolBase {
 
         EventHandler<MouseEvent> handler = event -> {
             if (isActive()) {
-                Point2D gridPoint = GridUtils.rectanglePosition(event.getX(), event.getY(), 5, 4);
+                Point2D gridPoint = GridUtils.rectanglePosition(event.getX(), event.getY(),
+                        getWidthCells(), getHeightCells());
 
                 newElem.setLayoutX(gridPoint.getX());
                 newElem.setLayoutY(gridPoint.getY());
-                newElem.setWidth(50);
-                newElem.setHeight(40);
+                newElem.setWidth(GridUtils.gridSize(getWidthCells()));
+                newElem.setHeight(GridUtils.gridSize(getHeightCells()));
 
                 if (documentManager.placeIsFree(newElem.getBoundsInParent())) {
                     newElem.setFill(Color.rgb(0, 255, 0, 0.3));
@@ -52,6 +53,18 @@ public class AddElementTool extends ToolBase {
         elementsPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, handler);
 
         elementsPane.addEventHandler(MouseEvent.MOUSE_EXITED, event -> newElem.setFill(Color.TRANSPARENT));
+    }
+
+    protected void addElement(DocumentManager documentManager, double x, double y) {
+        documentManager.addAndElement(x, y);
+    }
+
+    protected int getHeightCells() {
+        return 4;
+    }
+
+    protected int getWidthCells() {
+        return 5;
     }
 
     @Override

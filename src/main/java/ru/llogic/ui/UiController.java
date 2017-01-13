@@ -53,6 +53,13 @@ public class UiController {
     }
 
     @FXML
+    public void activateAddByteIn(ActionEvent event) {
+        if (activeDocument != null) {
+            activeDocument.activateAddByteIn();
+        }
+    }
+
+    @FXML
     public void addTab(ActionEvent event) {
         Pane editPane = null;
         try {

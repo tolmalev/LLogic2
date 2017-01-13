@@ -72,6 +72,14 @@ public abstract class ElementWidget<T extends Element<?>> extends Canvas {
         c.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
     }
 
+    protected Point2D getRightPointPosition(int pointIndex) {
+        return new Point2D(getWidth() - 2 * GridUtils.ELEMENT_BORDER, GridUtils.gridSize(1 + pointIndex));
+    }
+
+    protected Point2D getLeftPointPosition(int pointIndex) {
+        return new Point2D(0, GridUtils.gridSize(pointIndex + 1));
+    }
+
     protected Bounds getCenterBounds() {
         double minX = GridUtils.ELEMENT_BORDER;
         double minY = GridUtils.ELEMENT_BORDER;

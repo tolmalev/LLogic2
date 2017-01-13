@@ -16,6 +16,7 @@ import ru.llogic.core.CalculationManager;
 import ru.llogic.core.Element;
 import ru.llogic.core.Point;
 import ru.llogic.core.element.AndElement;
+import ru.llogic.core.element.ByteInElement;
 import ru.llogic.core.element.InElement;
 import ru.llogic.core.element.PointElement;
 import ru.llogic.ui.tool.AddElementTool;
@@ -23,6 +24,7 @@ import ru.llogic.ui.tool.ConnectTool;
 import ru.llogic.ui.tool.SelectorTool;
 import ru.llogic.ui.tool.ToolBase;
 import ru.llogic.ui.widget.AndElementWidget;
+import ru.llogic.ui.widget.ByteInElementWidget;
 import ru.llogic.ui.widget.ElementWidget;
 import ru.llogic.ui.widget.InElementWidget;
 import ru.llogic.ui.widget.PointWidget;
@@ -39,6 +41,7 @@ public class DocumentManager {
 
     private final SelectorTool selectorTool;
     private final AddElementTool addElementTool;
+    private final ToolBase byteInElementTool;
     private final ConnectTool connectTool;
 
     private ToolBase activeTool;
@@ -69,6 +72,23 @@ public class DocumentManager {
         selectorTool = new SelectorTool(this, elementsPane, selectionPane);
         addElementTool = new AddElementTool(this, elementsPane, newElementPane);
         connectTool = new ConnectTool(this, elementsPane);
+
+        byteInElementTool = new AddElementTool(this, elementsPane, newElementPane) {
+            @Override
+            protected int getWidthCells() {
+                return 4;
+            }
+
+            @Override
+            protected int getHeightCells() {
+                return 9;
+            }
+
+            @Override
+            protected void addElement(DocumentManager documentManager, double x, double y) {
+                addWidget(x, y, new ByteInElementWidget(new ByteInElement(calculationManager, 129)));
+            }
+        };
 
         activateTool(selectorTool);
     }
@@ -171,5 +191,9 @@ public class DocumentManager {
 
     public void activateAddAndElement() {
         activateTool(addElementTool);
+    }
+
+    public void activateAddByteIn() {
+        activateTool(byteInElementTool);
     }
 }

@@ -16,6 +16,7 @@ import ru.llogic.ui.GridUtils;
 public class InElementWidget extends ElementWidget<InElement> {
     public InElementWidget(InElement element) {
         super(element);
+        redrawOnPointChange(element.getOutputPoint());
     }
 
     @Override
@@ -26,9 +27,6 @@ public class InElementWidget extends ElementWidget<InElement> {
     @Override
     protected void onDoubleClick(MouseEvent event) {
         element.switchState();
-
-        redrawOnPointChange(element.getOutputPoint());
-        element.calculate();
     }
 
     @Override

@@ -16,6 +16,10 @@ public abstract class Element<T extends ElementSettings> {
     private final Class<T> settingsClass;
     protected T settings;
 
+    public final void addToCalculationQueue() {
+        manager.addToCalculationQueue(this);
+    }
+
     public final synchronized void calculate() {
         doCalculate();
     }

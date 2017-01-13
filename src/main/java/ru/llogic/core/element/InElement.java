@@ -31,6 +31,8 @@ public class InElement extends Element<InElement.InElementSettings> {
         PointState newState = getSettings().getPointState() == PointState.HIGH ? PointState.LOW : PointState.HIGH;
         setSettings(new InElementSettings(newState));
 
+        addToCalculationQueue();
+
         logger.debug("Element " + this + "output switched to " + newState);
     }
 

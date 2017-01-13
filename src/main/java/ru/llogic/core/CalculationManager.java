@@ -197,11 +197,11 @@ public class CalculationManager {
         }
     }
 
-    private void addToCalculationQueue(Element element) {
+    void addToCalculationQueue(Element element) {
         addToCalculationQueue(element::calculate, 0);
     }
 
-    private void addToCalculationQueue(Runnable runnable, long delayMillis) {
+    void addToCalculationQueue(Runnable runnable, long delayMillis) {
         calculationQueue.add(new RunnableWithTime(
                 runnable,
                 queueOrder.incrementAndGet(),

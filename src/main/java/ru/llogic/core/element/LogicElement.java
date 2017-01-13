@@ -14,9 +14,6 @@ import ru.llogic.core.PointState;
  * @author tolmalev
  */
 public abstract class LogicElement extends SimpleIoElement {
-    private final boolean base;
-    private final BiFunction<Boolean, Boolean, Boolean> fn;
-
     public LogicElement(CalculationManager manager,
             int inputsCount,
             boolean base,
@@ -29,9 +26,6 @@ public abstract class LogicElement extends SimpleIoElement {
             }
             return res ? PointState.HIGH : PointState.LOW;
         }));
-
-        this.base = base;
-        this.fn = fn;
     }
 
     protected List<Boolean> getInputStatesAsBool() {

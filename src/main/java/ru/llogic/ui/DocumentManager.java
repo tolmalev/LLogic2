@@ -75,7 +75,6 @@ public class DocumentManager {
 
     public InElement addInElement(double x, double y) {
         InElement inElement = new InElement(calculationManager);
-        inElement.calculate();
 
         InElementWidget widget = new InElementWidget(inElement);
 
@@ -86,7 +85,6 @@ public class DocumentManager {
 
     public AndElement addAndElement(double x, double y) {
         AndElement andElement = new AndElement(calculationManager, 2);
-        andElement.calculate();
 
         AndElementWidget widget = new AndElementWidget(andElement);
 

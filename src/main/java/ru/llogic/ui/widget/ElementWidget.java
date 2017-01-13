@@ -62,7 +62,6 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
 
         drawPoints();
         drawCenter();
-//        drawBorder();
     }
 
     protected void drawCenter() {
@@ -117,28 +116,6 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
 
 
             c.strokeLine(position.getX(), position.getY(), lineX, lineY);
-        }
-    }
-
-    protected void drawBorder() {
-        GraphicsContext c = getGraphicsContext2D();
-
-        if (getStyleClass().contains("selected")) {
-            c.setStroke(Color.rgb(53, 53, 255));
-            c.setLineWidth(2);
-
-            double dx = getWidthInPixels() / 5;
-            double dy = getHeightInPixels() / 5;
-
-            c.strokeLine(0, 0, dx, 0);
-            c.strokeLine(0, getHeight(), dx, getHeight());
-            c.strokeLine(getWidth() - dx, 0, getWidth(), 0);
-            c.strokeLine(getWidth() - dx, getHeight(), getWidth(), getHeight());
-
-            c.strokeLine(0, 0, 0, dy);
-            c.strokeLine(getWidth(), 0, getWidth(), dy);
-            c.strokeLine(0, getHeight() - dy, 0, getHeight());
-            c.strokeLine(getWidth(), getHeight() - dy, getWidth(), getHeight());
         }
     }
 

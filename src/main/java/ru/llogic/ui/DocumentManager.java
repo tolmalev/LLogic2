@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
@@ -57,7 +58,9 @@ public class DocumentManager {
         linesPane = (LinesCanvas) mainPane.lookup(".lines-pane");
         linesPane.setDocumentManager(this);
 
-        calculationManager.addCalculationQueueListener(linesPane::draw);
+        calculationManager.addCalculationQueueListener(() -> Platform.runLater(linesPane::draw));
+        calculationManager.addNewConnectionListener((a, b) -> Platform.runLater(linesPane::draw));
+        calculationManager.addRemoveConnectionListener((a, b) -> Platform.runLater(linesPane::draw));
 
         newElementPane = (Pane) mainPane.lookup(".new-element-pane");
         elementsPane = (Pane) mainPane.lookup(".elements_pane");

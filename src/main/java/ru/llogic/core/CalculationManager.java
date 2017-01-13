@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,6 +40,8 @@ public class CalculationManager {
     private Thread calculatorThread;
 
     private final Set<Runnable> calculationQueueListeners = new HashSet<>();
+    private final Set<BiConsumer<Point, Point>> addConnectionListeners = new HashSet<>();
+    private final Set<BiConsumer<Point, Point>> removeConnectionListeners = new HashSet<>();
 
     public CalculationManager() {
         calculatorThread = new Thread(this::calculateAll);
@@ -92,6 +95,10 @@ public class CalculationManager {
             connections.computeIfAbsent(b, k -> new HashSet<>()).add(a);
 
             calculateStates(a, Optional.empty());
+
+            synchronized (addConnectionListeners) {
+                addConnectionListeners.forEach(listener -> listener.accept(a, b));
+            }
         }
     }
 
@@ -108,6 +115,10 @@ public class CalculationManager {
 
             calculateStates(a, Optional.empty());
             calculateStates(b, Optional.empty());
+
+            synchronized (removeConnectionListeners) {
+                removeConnectionListeners.forEach(listener -> listener.accept(a, b));
+            }
         }
     }
 
@@ -327,6 +338,18 @@ public class CalculationManager {
     public void addCalculationQueueListener(Runnable runnable) {
         synchronized (calculationQueueListeners) {
             calculationQueueListeners.add(runnable);
+        }
+    }
+
+    public void addNewConnectionListener(BiConsumer<Point, Point> runnable) {
+        synchronized (addConnectionListeners) {
+            addConnectionListeners.add(runnable);
+        }
+    }
+
+    public void addRemoveConnectionListener(BiConsumer<Point, Point> runnable) {
+        synchronized (removeConnectionListeners) {
+            removeConnectionListeners.add(runnable);
         }
     }
 }

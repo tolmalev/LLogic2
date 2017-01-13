@@ -22,7 +22,7 @@ import ru.llogic.ui.GridUtils;
 /**
  * @author tolmalev
  */
-public abstract class ElementWidget<T extends Element> extends Canvas {
+public abstract class ElementWidget<T extends Element<?>> extends Canvas {
     private static final Logger logger = LogManager.getLogger(ElementWidget.class);
 
     protected final T element;
@@ -94,7 +94,7 @@ public abstract class ElementWidget<T extends Element> extends Canvas {
         c.setStroke(Color.BLACK);
 
         Bounds bounds = getCenterBounds();
-        for (Point point : ((List<Point>) element.getPoints())) {
+        for (Point point : element.getPoints()) {
             Point2D position = getPointPosition(point)
                     .add(GridUtils.ELEMENT_BORDER, GridUtils.ELEMENT_BORDER);
             c.fillOval(position.getX() - 2, position.getY() - 2, 4, 4);

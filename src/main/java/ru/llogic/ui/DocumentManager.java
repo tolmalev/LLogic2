@@ -115,6 +115,8 @@ public class DocumentManager {
         widget.heightProperty().addListener(evt -> linesPane.draw());
         widget.layoutXProperty().addListener(evt -> linesPane.draw());
         widget.layoutYProperty().addListener(evt -> linesPane.draw());
+
+        element.addToCalculationQueue();
     }
 
     public void setActive(boolean active) {

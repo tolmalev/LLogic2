@@ -1,8 +1,6 @@
 package ru.llogic.ui.tool;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 
 import javafx.collections.ListChangeListener;
@@ -59,6 +57,9 @@ public class ConnectTool extends ToolBase {
                     currentPosition = new Point2D(event.getX(), event.getY());
                     endPoint = findPoint(event);
                     if (endPoint != null && endPoint.equals(startPoint)) {
+                        endPoint = null;
+                    }
+                    if (endPoint != null && !documentManager.getCalculationManager().canConnect(startPoint, endPoint)) {
                         endPoint = null;
                     }
 

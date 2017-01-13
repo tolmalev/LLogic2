@@ -82,14 +82,24 @@ public class CalculationManager {
         return point;
     }
 
+    public boolean canConnect(Point a, Point b) {
+        PointState state1 = calculatedPointState.get(a);
+        PointState state2 = calculatedPointState.get(b);
+        if (state1 != state2 && state1 != PointState.Z && state2 != PointState.Z) {
+            return false;
+        }
+        if (state1 != PointState.Z && state2 != PointState.Z) {
+            return false;
+        }
+        return true;
+    }
+
     public void addConnection(Point a, Point b) {
         synchronized (connections) {
             allConnections.add(new Connection(a, b));
 
-            PointState state1 = calculatedPointState.get(a);
-            PointState state2 = calculatedPointState.get(b);
-            if (state1 != state2 && state1 != PointState.Z && state2 != PointState.Z) {
-                throw new ShortCircuitException(b, state2, state1);
+            if (!canConnect(a, b)) {
+                throw new ShortCircuitException(a);
             }
             connections.computeIfAbsent(a, k -> new HashSet<>()).add(b);
             connections.computeIfAbsent(b, k -> new HashSet<>()).add(a);
@@ -166,7 +176,7 @@ public class CalculationManager {
                 && pointState.get(p) != PointState.Z
                 && pointState.get(p) != state))
         {
-            throw new ShortCircuitException(point, current, state);
+            throw new ShortCircuitException(point);
         }
 
         pointState.put(point, state);

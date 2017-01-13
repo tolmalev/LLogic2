@@ -13,7 +13,7 @@ import ru.llogic.core.PointState;
 /**
  * @author tolmalev
  */
-public class SimpleIoElement extends Element {
+public class SimpleIoElement extends Element<EmptyElementSettings> {
     private int inputsCount;
 
     private final List<Function<List<PointState>, PointState>> outputCalculators;
